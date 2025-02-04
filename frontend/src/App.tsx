@@ -1,7 +1,10 @@
 
 const App = () => {
   return (
-    <div>App</div>
+    <>
+    <div>Social Media Forum Site</div>
+  
+  </>
   )
 }
 
