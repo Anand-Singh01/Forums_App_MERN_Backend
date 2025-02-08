@@ -5,8 +5,8 @@ import { connectToDatabase } from "../infrastructure/database/mongo/connection";
 import dependencies from "../infrastructure/dependencies";
 import postRoutes from "../interfaces/routes/postRoutes";
 
-const PORT = 3000;
 const app = express();
+const PORT = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(dependencies.config.cookie.cookieSecret));
