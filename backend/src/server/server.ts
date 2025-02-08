@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { connectToDatabase } from '../infrastructure/database/connection';
+import { connectToDatabase } from '../infrastructure/database/mongo/connection';
 
 const app = express();
 app.listen(3000, async () => {
