@@ -4,6 +4,7 @@ export interface ITokenData {
 }
 
 export interface IPostData {
+    userId:string
     caption: string;
     location: string | null;
 }

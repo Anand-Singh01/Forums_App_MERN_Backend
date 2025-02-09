@@ -1,10 +1,10 @@
 import cloudinary from "cloudinary";
-import dependencies from "../../dependencies";
+import config from "../../config/config";
 
 cloudinary.v2.config({
-  cloud_name: dependencies.config.cloud.name,
-  api_key: dependencies.config.cloud.apiKey,
-  api_secret: dependencies.config.cloud.secret,
+  cloud_name: config.cloud.name,
+  api_key: config.cloud.apiKey,
+  api_secret: config.cloud.secret,
 });
 
 export default cloudinary;

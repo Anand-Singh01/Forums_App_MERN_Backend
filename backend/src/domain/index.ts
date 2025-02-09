@@ -1,3 +1,4 @@
+import { Comment } from "./models/comment";
 import { Post } from "./models/post";
 import { Profile } from "./models/profile";
 import { Reply } from "./models/reply";

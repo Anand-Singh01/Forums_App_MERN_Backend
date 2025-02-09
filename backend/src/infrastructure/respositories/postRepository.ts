@@ -28,10 +28,62 @@ export const addPost = async (
       caption,
       location,
       postImage,
-      postedBy: userId
+      postedBy: userId,
     });
     const savedPost = await post.save();
     response.data = savedPost;
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "unexpected error occurred";
+    if (!response.statusCode || response.statusCode === 200) {
+      response.statusCode = 500;
+    }
+    response.data = null;
+  }
+  return response;
+};
+
+export const getPostById = async (postId: string) => {
+  let response: ServiceResponse = {
+    message: "success",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    const post = await dependencies.models.Post.findById(postId);
+    if (!post) {
+      response.statusCode = 404;
+      throw new Error("post not found.");
+    }
+    response.data = post;
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "unexpected error occurred";
+    if (!response.statusCode || response.statusCode === 200) {
+      response.statusCode = 500;
+    }
+    response.data = null;
+  }
+  return response;
+};
+
+export const getAllPosts = async () => {
+  let response: ServiceResponse = {
+    message: "success",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    const post = await dependencies.models.Post.find();
+    if (!post) {
+      response.statusCode = 404;
+      throw new Error("post not found.");
+    }
+    response.data = post;
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
