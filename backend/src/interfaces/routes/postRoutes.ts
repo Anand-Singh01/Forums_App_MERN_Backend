@@ -112,7 +112,7 @@ postRoutes.delete(
 );
 
 // Get my posts
-postRoutes.get("/get-my-posts/:userId", async (req: Request, res: Response) => {
+postRoutes.get("/get-my-posts", async (req: Request, res: Response) => {
   try {
     const { userId }: { userId: string } = res.locals.jwtData;
     const response: ServiceResponse = await getMyPosts(userId);
