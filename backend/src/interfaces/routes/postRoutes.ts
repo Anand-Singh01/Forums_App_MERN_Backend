@@ -1,12 +1,17 @@
 import { Request, Response, Router } from "express";
 import {
     addPost,
+    deletePost,
     getAllPosts,
     getPostById,
     updatePost,
 } from "../../infrastructure/respositories/postRepository";
 import { serverError } from "../../util/helper";
-import { IAddPostData, IUpdatePostData, ServiceResponse } from "../../util/interfaces";
+import {
+    IAddPostData,
+    IUpdatePostData,
+    ServiceResponse,
+} from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 import getDataUri from "../middleware/cloud/dataUri";
 import singleUpload from "../middleware/cloud/multer";
@@ -68,14 +73,17 @@ postRoutes.get("/get-allPosts", async (req: Request, res: Response) => {
 });
 
 // Update post
-postRoutes.put("/update-post", singleUpload, async (req: Request, res: Response) => {
+postRoutes.put(
+  "/update-post",
+  singleUpload,
+  async (req: Request, res: Response) => {
     try {
-        const data : IUpdatePostData = req.body;
-        const file: Express.Multer.File | undefined = req.file;
-        let fileContent: string | undefined = undefined;
-        if (data.isImageUpdated && file) {
-          fileContent = getDataUri(file).content;
-        }
+      const data: IUpdatePostData = req.body;
+      const file: Express.Multer.File | undefined = req.file;
+      let fileContent: string | undefined = undefined;
+      if (data.isImageUpdated && file) {
+        fileContent = getDataUri(file).content;
+      }
       const response: ServiceResponse = await updatePost(data, fileContent);
       res
         .status(response.statusCode)
@@ -83,6 +91,23 @@ postRoutes.put("/update-post", singleUpload, async (req: Request, res: Response)
     } catch (error) {
       return serverError(res, error);
     }
-  });
+  }
+);
+
+// Delete post
+postRoutes.delete(
+  "/delete-post/:postId",
+  async (req: Request, res: Response) => {
+    try {
+      const { postId } = req.params;
+      const response: ServiceResponse = await deletePost(postId);
+      res
+        .status(response.statusCode)
+        .json({ msg: response.message, data: response.data });
+    } catch (error) {
+      return serverError(res, error);
+    }
+  }
+);
 
 export default postRoutes;
