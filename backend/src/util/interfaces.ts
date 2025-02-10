@@ -3,7 +3,8 @@ export interface ITokenData {
     email: string;
 }
 
-export interface IPostData {
+export interface IAddPostData {
+    userId:string
     caption: string;
     location: string | null;
 }
@@ -29,3 +30,10 @@ export interface ILoginUser{
     email: string;
     password: string;
 }
+export interface IUpdatePostData {
+    postId:string,
+    caption:string;
+    location:string | null;
+    isImageUpdated:boolean;
+}
+  
