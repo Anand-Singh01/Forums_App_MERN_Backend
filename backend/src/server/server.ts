@@ -4,6 +4,7 @@ import express from "express";
 import { connectToDatabase } from "../infrastructure/database/mongo/connection";
 import dependencies from "../infrastructure/dependencies";
 import postRoutes from "../interfaces/routes/postRoutes";
+import authRoutes from "../interfaces/routes/authRoutes";
 
 const app = express();
 const PORT = 3000;
@@ -21,6 +22,7 @@ app.use(
 );
 
 app.use("/api/post", postRoutes);
+app.use("/api/auth", authRoutes);  
 
 app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);

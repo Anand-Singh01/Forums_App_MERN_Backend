@@ -7,7 +7,6 @@ const commentSchema = new Schema({
   commentedPost: { type: Schema.Types.ObjectId, ref: "Post" },
   commentedBy: { type: Schema.Types.ObjectId, ref: "User" },
   totalReply: { type: Number, default: 0 },
-  commentLikes: { typw: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
