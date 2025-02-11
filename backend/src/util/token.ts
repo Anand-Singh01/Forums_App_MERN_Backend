@@ -35,7 +35,7 @@ export const verifyToken = (
       const data = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
 
       const jwtData: ITokenData = {
-        userId: data.id,
+        userId: data.userId,
         email: data.email,
       };
 

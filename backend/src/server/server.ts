@@ -6,6 +6,7 @@ import dependencies from "../infrastructure/dependencies";
 import postRoutes from "../interfaces/routes/postRoutes";
 import authRoutes from "../interfaces/routes/authRoutes";
 import preferenceRoutes from "../interfaces/routes/preferenceRoutes"; 
+import { verifyToken } from "../util/token";
 
 const app = express();
 const PORT = 3000;
@@ -22,9 +23,9 @@ app.use(
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
   })
 );
-
-app.use("/api/post", postRoutes);
 app.use("/api/auth", authRoutes);
+app.use(verifyToken);
+app.use("/api/post", postRoutes);
 app.use("/api/preference", preferenceRoutes); 
 
 app.listen(PORT, async () => {

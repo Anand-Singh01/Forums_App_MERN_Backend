@@ -6,9 +6,7 @@ import { verifyToken } from "../../util/token";
 import getDataUri from "../middleware/cloud/dataUri";
 import singleUpload from "../middleware/cloud/multer";
 
-const preferenceRoutes = Router();
-
-preferenceRoutes.use(verifyToken);
+const preferenceRoutes = Router()
 
 preferenceRoutes.put(
   "/update-profile",
