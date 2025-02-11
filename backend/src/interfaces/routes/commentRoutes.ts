@@ -16,6 +16,6 @@ commentRoutes.post("/add-comment", async (req: Request, res: Response) => {
   } catch (error) {
     return serverError(res, error);
   }
-});
+});    
 
 export default commentRoutes;
