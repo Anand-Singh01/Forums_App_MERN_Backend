@@ -175,3 +175,60 @@ export const updateReply = async (data: IUpdateReply) => {
   }
   return response;
 };
+
+export const deleteComment = async (commentId: string) => {
+  let response: ServiceResponse = {
+    message: "success",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      response.statusCode = 404;
+      throw new Error("Comment not found.");
+    }
+
+    // Delete the comment
+    await Comment.deleteOne({ _id: comment._id });
+
+    // Delete all replies linked to this comment
+    await Reply.deleteMany({ replyToComment: comment._id });
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "unexpected error occurred";
+    if (!response.statusCode || response.statusCode === 200) {
+      response.statusCode = 500;
+    }
+    response.data = null;
+  }
+  return response;
+};
+
+export const deleteReply = async (replyId: string) => {
+  let response: ServiceResponse = {
+    message: "success",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    const reply = await Reply.findById(replyId);
+    if(!reply){
+      response.statusCode = 404;
+      throw new Error("Reply not found.");
+    }
+    await reply.deleteOne({_id:replyId});
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "unexpected error occurred";
+    if (!response.statusCode || response.statusCode === 200) {
+      response.statusCode = 500;
+    }
+    response.data = null;
+  }
+  return response;
+};

@@ -2,12 +2,19 @@ import { Request, Response, Router } from "express";
 import {
   addComment,
   addReply,
+  deleteComment,
+  deleteReply,
   getCommentAndReply,
   updateComment,
   updateReply,
 } from "../../infrastructure/respositories/commentRepository";
 import { serverError } from "../../util/helper";
-import { ICreateComment, ICreateReply, IUpdateComment, IUpdateReply } from "../../util/interfaces";
+import {
+  ICreateComment,
+  ICreateReply,
+  IUpdateComment,
+  IUpdateReply,
+} from "../../util/interfaces";
 
 const commentRoutes = Router();
 
@@ -56,12 +63,38 @@ commentRoutes.get(
 );
 
 //  Update a comment
-commentRoutes.post(
-  "/updateComment",
+commentRoutes.post("/updateComment", async (req: Request, res: Response) => {
+  try {
+    const data: IUpdateComment = req.body;
+    const response = await updateComment(data);
+    res
+      .status(response.statusCode)
+      .json({ msg: response.message, data: response.data });
+  } catch (error) {
+    return serverError(res, error);
+  }
+});
+
+//  Update a reply
+commentRoutes.post("/updateReply", async (req: Request, res: Response) => {
+  try {
+    const data: IUpdateReply = req.body;
+    const response = await updateReply(data);
+    res
+      .status(response.statusCode)
+      .json({ msg: response.message, data: response.data });
+  } catch (error) {
+    return serverError(res, error);
+  }
+});
+
+//  Delete a comment
+commentRoutes.get(
+  "/delete-comment/:commentId",
   async (req: Request, res: Response) => {
     try {
-      const data : IUpdateComment = req.body;
-      const response = await updateComment(data);
+      const { commentId } = req.params;
+      const response = await deleteComment(commentId);
       res
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });
@@ -71,13 +104,13 @@ commentRoutes.post(
   }
 );
 
-//  Update a reply
-commentRoutes.post(
-  "/updateReply",
+//  Delete a reply
+commentRoutes.get(
+  "/delete-reply/:replyId",
   async (req: Request, res: Response) => {
     try {
-      const data : IUpdateReply = req.body;
-      const response = await updateReply(data);
+      const { replyId } = req.params;
+      const response = await deleteReply(replyId);
       res
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });
