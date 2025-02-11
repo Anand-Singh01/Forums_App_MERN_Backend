@@ -36,4 +36,10 @@ export interface IUpdatePostData {
     location:string | null;
     isImageUpdated:boolean;
 }
+
+export interface IUpdateProfileData {
+    name: string; 
+    description: string; 
+    isImageUpdated: boolean; 
+  }
   

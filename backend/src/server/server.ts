@@ -5,9 +5,11 @@ import { connectToDatabase } from "../infrastructure/database/mongo/connection";
 import dependencies from "../infrastructure/dependencies";
 import postRoutes from "../interfaces/routes/postRoutes";
 import authRoutes from "../interfaces/routes/authRoutes";
+import preferenceRoutes from "../interfaces/routes/preferenceRoutes"; 
 
 const app = express();
 const PORT = 3000;
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(dependencies.config.cookie.cookieSecret));
@@ -22,7 +24,8 @@ app.use(
 );
 
 app.use("/api/post", postRoutes);
-app.use("/api/auth", authRoutes);  
+app.use("/api/auth", authRoutes);
+app.use("/api/preference", preferenceRoutes); 
 
 app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
