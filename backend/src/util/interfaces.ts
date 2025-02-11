@@ -40,4 +40,10 @@ export interface ICreateComment {
     postId:string,
     comment:string,
 }
-  
+
+export interface ICreateReply {
+    postId:string,
+    commentId:string,
+    reply:string,
+}
+   
