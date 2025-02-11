@@ -4,7 +4,6 @@ export interface ITokenData {
 }
 
 export interface IAddPostData {
-    userId:string
     caption: string;
     location: string | null;
 }
@@ -16,6 +15,20 @@ export interface ServiceResponse<T = unknown> {
     data: T | null;
 }
 
+
+export interface IRegisterUser{
+ email: string;
+    password: string;  
+    firstName: string;
+    lastName: string;
+    userName: string;
+    dob: Date; 
+}
+
+export interface ILoginUser{
+    email: string;
+    password: string;
+}
 export interface IUpdatePostData {
     postId:string,
     caption:string;

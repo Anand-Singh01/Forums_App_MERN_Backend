@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import { connectToDatabase } from "../infrastructure/database/mongo/connection";
 import dependencies from "../infrastructure/dependencies";
+import authRoutes from "../interfaces/routes/authRoutes";
 import commentRoutes from "../interfaces/routes/commentRoutes";
 import postRoutes from "../interfaces/routes/postRoutes";
 import { verifyToken } from "../util/token";
@@ -22,9 +23,10 @@ app.use(
   })
 );
 
+app.use("/api/auth", authRoutes); 
 app.use(verifyToken);
 app.use("/api/post", postRoutes);
-app.use("/api/comment", commentRoutes);
+app.use("/api/comment", commentRoutes); 
 
 app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
