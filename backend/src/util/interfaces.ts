@@ -46,4 +46,14 @@ export interface ICreateReply {
     commentId:string,
     reply:string,
 }
+
+export interface IUpdateComment {
+    commentId:string,
+    comment:string,
+}
+
+export interface IUpdateReply {
+    replyId:string,
+    reply:string,
+}
    
