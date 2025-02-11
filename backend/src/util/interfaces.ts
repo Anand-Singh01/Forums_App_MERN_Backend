@@ -22,4 +22,9 @@ export interface IUpdatePostData {
     location:string | null;
     isImageUpdated:boolean;
 }
+
+export interface ICreateComment {
+    postId:string,
+    comment:string,
+}
   
