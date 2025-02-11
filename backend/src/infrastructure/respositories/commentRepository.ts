@@ -79,3 +79,36 @@ export const addReply = async (userId: string, data: ICreateReply) => {
   }
   return response;
 };
+
+export const getCommentAndReply = async (postId:string) => {
+  let response: ServiceResponse = {
+    message: "success",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    const post = await Post.findById(postId)
+  .populate({
+    path: "comments",
+    populate: {
+      path: "reply"
+    },
+  }).select('comments')
+  .lean();  
+    if(!post){
+      response.statusCode = 404;
+      throw new Error("Post not found.");
+    }
+    response.data = post;
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "unexpected error occurred";
+    if (!response.statusCode || response.statusCode === 200) {
+      response.statusCode = 500;
+    }
+    response.data = null;
+  }
+  return response;
+};
