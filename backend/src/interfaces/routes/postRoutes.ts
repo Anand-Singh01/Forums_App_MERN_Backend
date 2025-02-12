@@ -1,16 +1,17 @@
 import { Request, Response, Router } from "express";
 import {
-    addPost,
-    deletePost,
-    getAllPosts,
-    getPostById,
-    updatePost,
+  addPost,
+  deletePost,
+  getAllPosts,
+  getMyPosts,
+  getPostById,
+  updatePost,
 } from "../../infrastructure/respositories/postRepository";
 import { serverError } from "../../util/helper";
 import {
-    IAddPostData,
-    IUpdatePostData,
-    ServiceResponse,
+  IAddPostData,
+  IUpdatePostData,
+  ServiceResponse,
 } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 import getDataUri from "../middleware/cloud/dataUri";
@@ -109,5 +110,18 @@ postRoutes.delete(
     }
   }
 );
+
+// Get my posts
+postRoutes.get("/get-my-posts", async (req: Request, res: Response) => {
+  try {
+    const { userId }: { userId: string } = res.locals.jwtData;
+    const response: ServiceResponse = await getMyPosts(userId);
+    res
+      .status(response.statusCode)
+      .json({ msg: response.message, data: response.data });
+  } catch (error) {
+    return serverError(res, error);
+  }
+});
 
 export default postRoutes;

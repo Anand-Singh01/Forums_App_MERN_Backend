@@ -162,3 +162,25 @@ export const deletePost = async (postId: string) => {
   }
   return response;
 };
+
+export const getMyPosts = async (userId:string) => {
+  let response: ServiceResponse = {
+    message: "success",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    const posts = await dependencies.models.Post.find({postedBy:userId});
+    response.data = posts;
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "unexpected error occurred";
+    if (!response.statusCode || response.statusCode === 200) {
+      response.statusCode = 500;
+    }
+    response.data = null;
+  }
+  return response;
+};
