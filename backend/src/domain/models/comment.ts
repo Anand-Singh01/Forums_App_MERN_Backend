@@ -6,7 +6,7 @@ const commentSchema = new Schema({
   isEdited: { type: Boolean, default: false },
   commentedPost: { type: Schema.Types.ObjectId, ref: "Post" },
   commentedBy: { type: Schema.Types.ObjectId, ref: "User" },
-  totalReply: { type: Number, default: 0 },
+  reply: [ { type: Schema.Types.ObjectId, ref: "Reply" }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

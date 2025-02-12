@@ -4,7 +4,6 @@ export interface ITokenData {
 }
 
 export interface IAddPostData {
-    userId:string
     caption: string;
     location: string | null;
 }
@@ -36,4 +35,25 @@ export interface IUpdatePostData {
     location:string | null;
     isImageUpdated:boolean;
 }
-  
+
+export interface ICreateComment {
+    postId:string,
+    comment:string,
+}
+
+export interface ICreateReply {
+    postId:string,
+    commentId:string,
+    reply:string,
+}
+
+export interface IUpdateComment {
+    commentId:string,
+    comment:string,
+}
+
+export interface IUpdateReply {
+    replyId:string,
+    reply:string,
+}
+   

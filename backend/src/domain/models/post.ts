@@ -6,7 +6,6 @@ const postSchema = new Schema({
   location: { type: String, required: false },
   postImage: { type: String, required: true },
   totalLikes: { type: Number, default: 0 },
-  totalComments: { type: Number, default: 0 },
   postedBy: { type: Schema.Types.ObjectId, ref: "User" },
   likedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
   savedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
