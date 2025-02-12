@@ -36,6 +36,14 @@ export interface IUpdatePostData {
     isImageUpdated:boolean;
 }
 
+export interface IUpdateProfileData {
+    name: string; 
+    description: string; 
+    isImageUpdated: boolean; 
+  }
+  
+
+
 export interface ICreateComment {
     postId:string,
     comment:string,

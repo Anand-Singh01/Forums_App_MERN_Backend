@@ -4,12 +4,13 @@ import express from "express";
 import { connectToDatabase } from "../infrastructure/database/mongo/connection";
 import dependencies from "../infrastructure/dependencies";
 import authRoutes from "../interfaces/routes/authRoutes";
-import commentRoutes from "../interfaces/routes/commentRoutes";
 import postRoutes from "../interfaces/routes/postRoutes";
+import preferenceRoutes from "../interfaces/routes/preferenceRoutes";
 import { verifyToken } from "../util/token";
 
 const app = express();
 const PORT = 3000;
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(dependencies.config.cookie.cookieSecret));
@@ -22,11 +23,10 @@ app.use(
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
   })
 );
-
-app.use("/api/auth", authRoutes); 
+app.use("/api/auth", authRoutes);
 app.use(verifyToken);
 app.use("/api/post", postRoutes);
-app.use("/api/comment", commentRoutes); 
+app.use("/api/preference", preferenceRoutes); 
 
 app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
