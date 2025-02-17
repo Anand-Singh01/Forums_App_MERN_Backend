@@ -26,7 +26,7 @@ export const addPost = async (
     }
     if (!postImage) {
       response.statusCode = 400;
-      throw new Error("error saving image.");
+      throw new Error("image is required.");
     }
     const post = new dependencies.models.Post({
       caption,
@@ -121,6 +121,9 @@ export const updatePost = async (
     if (data.isImageUpdated && fileContent) {
       const myCloud = await dependencies.cloud.v2.uploader.upload(fileContent);
       post.postImage = myCloud.secure_url;
+    } else if (data.isImageUpdated && !fileContent) {
+      response.statusCode = 400;
+      throw new Error("image is required to update.");
     }
     await post.save();
     response.data = post;
@@ -163,7 +166,7 @@ export const deletePost = async (postId: string) => {
   return response;
 };
 
-export const getMyPosts = async (userId:string) => {
+export const getMyPosts = async (userId: string) => {
   let response: ServiceResponse = {
     message: "success",
     status: true,
@@ -172,7 +175,7 @@ export const getMyPosts = async (userId:string) => {
   };
 
   try {
-    const posts = await dependencies.models.Post.find({postedBy:userId});
+    const posts = await dependencies.models.Post.find({ postedBy: userId });
     response.data = posts;
   } catch (error) {
     response.status = false;

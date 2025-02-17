@@ -16,6 +16,12 @@ import {
 import { verifyToken } from "../../util/token";
 import getDataUri from "../middleware/cloud/dataUri";
 import singleUpload from "../middleware/cloud/multer";
+import {
+  addPostValidation,
+  deletePostValidation,
+  getPostByIdValidation,
+  updatePostValidation,
+} from "../middleware/validation/post";
 
 const postRoutes = Router();
 
@@ -25,6 +31,7 @@ postRoutes.use(verifyToken);
 postRoutes.post(
   "/add-post",
   singleUpload,
+  addPostValidation,
   async (req: Request, res: Response) => {
     try {
       const { userId }: { userId: string } = res.locals.jwtData;
@@ -49,17 +56,21 @@ postRoutes.post(
 );
 
 // Get post by Id
-postRoutes.get("/get-post/:postId", async (req: Request, res: Response) => {
-  try {
-    const { postId } = req.params;
-    const response: ServiceResponse = await getPostById(postId);
-    res
-      .status(response.statusCode)
-      .json({ msg: response.message, data: response.data });
-  } catch (error) {
-    return serverError(res, error);
+postRoutes.get(
+  "/get-post/:postId",
+  getPostByIdValidation,
+  async (req: Request, res: Response) => {
+    try {
+      const { postId } = req.params;
+      const response: ServiceResponse = await getPostById(postId);
+      res
+        .status(response.statusCode)
+        .json({ msg: response.message, data: response.data });
+    } catch (error) {
+      return serverError(res, error);
+    }
   }
-});
+);
 
 // Get all posts
 postRoutes.get("/get-allPosts", async (req: Request, res: Response) => {
@@ -77,6 +88,7 @@ postRoutes.get("/get-allPosts", async (req: Request, res: Response) => {
 postRoutes.put(
   "/update-post",
   singleUpload,
+  updatePostValidation,
   async (req: Request, res: Response) => {
     try {
       const data: IUpdatePostData = req.body;
@@ -98,6 +110,7 @@ postRoutes.put(
 // Delete post
 postRoutes.delete(
   "/delete-post/:postId",
+  deletePostValidation,
   async (req: Request, res: Response) => {
     try {
       const { postId } = req.params;
