@@ -191,7 +191,7 @@ export const getMyPosts = async (userId: string) => {
 };
 
 
-// Saving A Post
+
 export const savePost = async (userId: string, data: ISavePostData): Promise<ServiceResponse> => {
   let response: ServiceResponse = {
     message: "Post saved successfully",
@@ -220,7 +220,7 @@ export const savePost = async (userId: string, data: ISavePostData): Promise<Ser
     const postObjectId = new mongoose.Types.ObjectId(postId);
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    // Dupe Save?
+    // Duplicate Save?
     if (user.savedPosts.includes(postObjectId)) {
       response.message = "Post is already saved.";
       return response;
@@ -234,6 +234,57 @@ export const savePost = async (userId: string, data: ISavePostData): Promise<Ser
       post.savedBy.push(userObjectId);
       await post.save();
     }
+
+    response.data = { savedPosts: user.savedPosts, savedBy: post.savedBy };
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "Unexpected error occurred";
+    response.statusCode = response.statusCode || 500;
+  }
+
+  return response;
+};
+
+
+export const unsavePost = async (userId: string, data: ISavePostData): Promise<ServiceResponse> => {
+  let response: ServiceResponse = {
+    message: "Post unsaved successfully",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    const { postId } = data;
+
+    // Post Exists?
+    const post = await dependencies.models.Post.findById(postId);
+    if (!post) {
+      response.statusCode = 404;
+      throw new Error("Post not found.");
+    }
+
+    // User Exists?
+    const user = await dependencies.models.User.findById(userId);
+    if (!user) {
+      response.statusCode = 404;
+      throw new Error("User not found.");
+    }
+
+    const postObjectId = new mongoose.Types.ObjectId(postId);
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
+    // Duplicate Save?
+    if (!user.savedPosts.includes(postObjectId)) {
+      response.message = "Post is not saved.";
+      return response;
+    }
+
+    user.savedPosts = user.savedPosts.filter(id => !id.equals(postObjectId));
+    await user.save();
+
+    post.savedBy = post.savedBy.filter(id => !id.equals(userObjectId));
+    await post.save();
 
     response.data = { savedPosts: user.savedPosts, savedBy: post.savedBy };
   } catch (error) {
