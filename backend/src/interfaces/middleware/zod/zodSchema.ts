@@ -33,3 +33,5 @@ export const deletePostSchema = z.object({
 export const getPostByIdSchema = z.object({
   postId: z.instanceof(ObjectId, { message: "Invalid PostId" }),
 });
+
+

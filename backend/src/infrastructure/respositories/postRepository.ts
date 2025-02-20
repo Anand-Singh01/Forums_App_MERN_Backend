@@ -1,9 +1,11 @@
 import {
   IAddPostData,
+  ISavePostData,
   IUpdatePostData,
   ServiceResponse,
 } from "../../util/interfaces";
 import dependencies from "../dependencies";
+import mongoose from "mongoose";
 
 export const addPost = async (
   userId: string,
@@ -185,5 +187,60 @@ export const getMyPosts = async (userId: string) => {
     }
     response.data = null;
   }
+  return response;
+};
+
+
+// Saving A Post
+export const savePost = async (userId: string, data: ISavePostData): Promise<ServiceResponse> => {
+  let response: ServiceResponse = {
+    message: "Post saved successfully",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    const { postId } = data;
+
+    // Post Exists?
+    const post = await dependencies.models.Post.findById(postId);
+    if (!post) {
+      response.statusCode = 404;
+      throw new Error("Post not found.");
+    }
+
+    // User Exists?
+    const user = await dependencies.models.User.findById(userId);
+    if (!user) {
+      response.statusCode = 404;
+      throw new Error("User not found.");
+    }
+
+    const postObjectId = new mongoose.Types.ObjectId(postId);
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
+    // Dupe Save?
+    if (user.savedPosts.includes(postObjectId)) {
+      response.message = "Post is already saved.";
+      return response;
+    }
+
+
+    user.savedPosts.push(postObjectId);
+    await user.save();
+
+    if (!post.savedBy.includes(userObjectId)) {
+      post.savedBy.push(userObjectId);
+      await post.save();
+    }
+
+    response.data = { savedPosts: user.savedPosts, savedBy: post.savedBy };
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "Unexpected error occurred";
+    response.statusCode = response.statusCode || 500;
+  }
+
   return response;
 };

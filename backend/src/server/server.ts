@@ -7,6 +7,8 @@ import authRoutes from "../interfaces/routes/authRoutes";
 import postRoutes from "../interfaces/routes/postRoutes";
 import preferenceRoutes from "../interfaces/routes/preferenceRoutes";
 import { verifyToken } from "../util/token";
+import { savePost } from "../infrastructure/respositories/postRepository";
+import savePostRoutes from "../interfaces/routes/savePostRoutes";
 
 const app = express();
 const PORT = 3000;
@@ -27,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use(verifyToken);
 app.use("/api/post", postRoutes);
 app.use("/api/preference", preferenceRoutes); 
+app.use("/api/save", savePostRoutes);
 
 app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
