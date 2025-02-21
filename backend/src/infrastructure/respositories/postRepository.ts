@@ -295,3 +295,37 @@ export const unsavePost = async (userId: string, data: ISavePostData): Promise<S
 
   return response;
 };
+
+
+export const getAllSavedPosts = async (userId: string): Promise<ServiceResponse> => {
+  let response: ServiceResponse = {
+    message: "Got all saved posts successfully",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    // User Exists?
+    const user = await dependencies.models.User.findById(userId).populate({
+      path: "savedPosts",
+      select: "caption location postImage totalLikes postedBy likedBy savedBy comments createdAt updatedAt",
+      populate: { path: "postedBy", select: "username profilePicture" }, 
+
+    });
+
+    if (!user) {
+      response.statusCode = 404;
+      throw new Error("User not found.");
+    }
+
+    response.data = user.savedPosts;
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "Unexpected error occurred";
+    response.statusCode = response.statusCode || 500;
+  }
+
+  return response;
+};
+

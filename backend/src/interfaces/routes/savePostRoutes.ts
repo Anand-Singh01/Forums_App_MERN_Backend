@@ -1,6 +1,6 @@
 import express, { Request, Router } from "express";
-import { savePost, unsavePost } from "../../infrastructure/respositories/postRepository";
-import { ISavePostData } from "../../util/interfaces";
+import { savePost, unsavePost, getAllSavedPosts } from "../../infrastructure/respositories/postRepository";
+import { ISavePostData, ServiceResponse } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 
 const savePostRoutes = Router();
@@ -41,5 +41,29 @@ savePostRoutes.post("/unsave-Post", async (req, res) => {
   }
 });
 
+
+savePostRoutes.get("/getAllSaved", async (req, res) => {
+  try {
+    const { userId }: { userId: string } = res.locals.jwtData;
+
+    const response = await getAllSavedPosts(userId);
+
+    return res.status(response.statusCode).json(response);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error." });
+  }
+});
+
+
+// postRoutes.get("/get-allPosts", async (req: Request, res: Response) => {
+//   try {
+//     const response: ServiceResponse = await getAllPosts();
+//     res
+//       .status(response.statusCode)
+//       .json({ msg: response.message, data: response.data });
+//   } catch (error) {
+//     return serverError(res, error);
+//   }
+// });
 
 export default savePostRoutes;
