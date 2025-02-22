@@ -1,5 +1,5 @@
-import dependencies from "../../infrastructure/dependencies";
 import mongoose from "mongoose";
+import dependencies from "../../infrastructure/dependencies";
 import { IUpdatePostData } from "../../util/interfaces";
 
 export const saveImageOnCloud = async (fileContent: string) => {
@@ -61,7 +61,6 @@ export const getPostsByUserIdQuery = async (userId: string) => {
   return await dependencies.models.Post.find({ postedBy: userId });
 };
 
-
 export const savePostQuery = async (userId: string, postId: string) => {
   const post = await dependencies.models.Post.findById(postId);
   if (!post) throw new Error("Post not found.");
@@ -110,7 +109,6 @@ export const unsavePostQuery = async (userId: string, postId: string) => {
   return { savedPosts: user.savedPosts, savedBy: post.savedBy };
 };
 
-
 export const getAllSavedPostsQuery = async (userId: string) => {
   return await dependencies.models.User.findById(userId).populate({
 
@@ -120,8 +118,6 @@ export const getAllSavedPostsQuery = async (userId: string) => {
 
   });
 };
-
-
 
 export const likePostQuery = async (userId: string, postId: string) => {
   const post = await dependencies.models.Post.findById(postId);
@@ -148,8 +144,6 @@ export const likePostQuery = async (userId: string, postId: string) => {
   return { likedPosts: user.likedPosts, likedBy: post.likedBy };
 };
 
-
-
 export const unlikePostQuery = async (userId: string, postId: string) => {
   const post = await dependencies.models.Post.findById(postId);
   if (!post) throw new Error("Post not found.");
@@ -172,7 +166,6 @@ export const unlikePostQuery = async (userId: string, postId: string) => {
 
   return { likedPosts: user.likedPosts, likedBy: post.likedBy };
 };
-
 
 export const getAllLikedPostsQuery = async (userId: string) => {
   return await dependencies.models.User.findById(userId).populate({

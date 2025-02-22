@@ -1,5 +1,5 @@
 import express, { Request, Router } from "express";
-import { savePost, unsavePost, getAllSavedPosts, likePost, unlikePost, getAllLikedPosts } from "../../infrastructure/respositories/postRepository";
+import { likePost, unlikePost, getAllLikedPosts } from "../../infrastructure/respositories/likePostRepository";
 import { ILikePostData, ISavePostData, ServiceResponse } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 

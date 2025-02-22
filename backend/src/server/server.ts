@@ -7,7 +7,6 @@ import authRoutes from "../interfaces/routes/authRoutes";
 import postRoutes from "../interfaces/routes/postRoutes";
 import preferenceRoutes from "../interfaces/routes/preferenceRoutes";
 import { verifyToken } from "../util/token";
-import { savePost } from "../infrastructure/respositories/postRepository";
 import savePostRoutes from "../interfaces/routes/savePostRoutes";
 import likePostRoutes from "../interfaces/routes/likePostRoutes";
 
