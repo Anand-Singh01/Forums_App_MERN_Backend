@@ -5,8 +5,8 @@ import { connectToDatabase } from "../infrastructure/database/mongo/connection";
 import dependencies from "../infrastructure/dependencies";
 import authRoutes from "../interfaces/routes/authRoutes";
 import postRoutes from "../interfaces/routes/postRoutes";
-import preferenceRoutes from "../interfaces/routes/preferenceRoutes";
 import { verifyToken } from "../util/token";
+import profileRoutes from "../interfaces/routes/profileRoutes";
 
 const app = express();
 const PORT = 3000;
@@ -26,7 +26,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use(verifyToken);
 app.use("/api/post", postRoutes);
-app.use("/api/preference", preferenceRoutes); 
+app.use("/api/profile", profileRoutes); 
 
 app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);

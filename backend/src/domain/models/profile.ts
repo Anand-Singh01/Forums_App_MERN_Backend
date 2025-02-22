@@ -2,11 +2,14 @@ import { model, Schema } from "mongoose";
 
 // Profile Schema
 const profileSchema = new Schema({
-  profileId: { type: Schema.Types.ObjectId, required: true },
   profileName: { type: String, required: true, default: "Profile Name" },
-  profilePicture: { type: String, required: false },
-  profileDesctipion: { type: String, required: false },
-  user: { type: Schema.Types.ObjectId, ref: "User" },
+  profilePicture: {
+    type: String,
+    required: false,
+    default: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png", // Generic User Icon
+  },
+  profileDescription: { type: String, required: false },
+  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
 
 export const Profile = model("Profile", profileSchema);
