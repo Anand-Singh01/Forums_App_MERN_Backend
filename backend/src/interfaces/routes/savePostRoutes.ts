@@ -1,5 +1,5 @@
 import express, { Request, Router } from "express";
-import { savePost, unsavePost, getAllSavedPosts } from "../../infrastructure/respositories/postRepository";
+import { savePost, unsavePost, getAllSavedPosts } from "../../infrastructure/respositories/savePostRepository";
 import { ISavePostData, ServiceResponse } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 
