@@ -1,21 +1,21 @@
 import express, { Request, Router } from "express";
-import { savePost, unsavePost, getAllSavedPosts } from "../../infrastructure/respositories/postRepository";
-import { ISavePostData, ServiceResponse } from "../../util/interfaces";
+import { savePost, unsavePost, getAllSavedPosts, likePost, unlikePost, getAllLikedPosts } from "../../infrastructure/respositories/postRepository";
+import { ILikePostData, ISavePostData, ServiceResponse } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 
-const savePostRoutes = Router();
-savePostRoutes.use(verifyToken);
+const likePostRoutes = Router();
+likePostRoutes.use(verifyToken);
 
-savePostRoutes.post("/save-Post", async (req, res) => {
+likePostRoutes.post("/like-Post", async (req, res) => {
   try {
     const { userId }: { userId: string } = res.locals.jwtData;
-    const { postId }: ISavePostData = req.body;
+    const { postId }: ILikePostData = req.body;
 
     if (!postId) {
       return res.status(400).json({ message: "Post ID is required." });
     }
 
-    const response = await savePost(userId, { postId });
+    const response = await likePost(userId, { postId });
 
     return res.status(response.statusCode).json(response);
   } catch (error) {
@@ -23,17 +23,16 @@ savePostRoutes.post("/save-Post", async (req, res) => {
   }
 });
 
-
-savePostRoutes.post("/unsave-Post", async (req, res) => {
+likePostRoutes.post("/unlike-Post", async (req, res) => {
   try {
     const { userId }: { userId: string } = res.locals.jwtData;
-    const { postId }: ISavePostData = req.body;
+    const { postId }: ILikePostData = req.body;
 
     if (!postId) {
       return res.status(400).json({ message: "Post is required." });
     }
 
-    const response = await unsavePost(userId, { postId });
+    const response = await unlikePost(userId, { postId });
 
     return res.status(response.statusCode).json(response);
   } catch (error) {
@@ -41,12 +40,11 @@ savePostRoutes.post("/unsave-Post", async (req, res) => {
   }
 });
 
-
-savePostRoutes.get("/getAllSaved", async (req, res) => {
+likePostRoutes.get("/getAllLiked", async (req, res) => {
   try {
     const { userId }: { userId: string } = res.locals.jwtData;
 
-    const response = await getAllSavedPosts(userId);
+    const response = await getAllLikedPosts(userId);
 
     return res.status(response.statusCode).json(response);
   } catch (error) {
@@ -54,5 +52,4 @@ savePostRoutes.get("/getAllSaved", async (req, res) => {
   }
 });
 
-
-export default savePostRoutes;
+export default likePostRoutes;

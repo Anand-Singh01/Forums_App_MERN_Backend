@@ -12,6 +12,11 @@ export interface ISavePostData {
     postId: string;
 }
 
+export interface ILikePostData {
+    postId: string;
+}
+
+
 
 
 export interface ServiceResponse<T = unknown> {

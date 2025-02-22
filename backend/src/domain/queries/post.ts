@@ -120,3 +120,64 @@ export const getAllSavedPostsQuery = async (userId: string) => {
 
   });
 };
+
+
+
+export const likePostQuery = async (userId: string, postId: string) => {
+  const post = await dependencies.models.Post.findById(postId);
+  if (!post) throw new Error("Post not found.");
+
+  const user = await dependencies.models.User.findById(userId);
+  if (!user) throw new Error("User not found.");
+
+  const postObjectId = new mongoose.Types.ObjectId(postId);
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+
+  if (user.likedPosts.includes(postObjectId)) {
+    throw new Error("Post is already liked.");
+  }
+
+  user.likedPosts.push(postObjectId);
+  await user.save();
+
+  if (!post.likedBy.includes(userObjectId)) {
+    post.likedBy.push(userObjectId);
+    await post.save();
+  }
+
+  return { likedPosts: user.likedPosts, likedBy: post.likedBy };
+};
+
+
+
+export const unlikePostQuery = async (userId: string, postId: string) => {
+  const post = await dependencies.models.Post.findById(postId);
+  if (!post) throw new Error("Post not found.");
+
+  const user = await dependencies.models.User.findById(userId);
+  if (!user) throw new Error("User not found.");
+
+  const postObjectId = new mongoose.Types.ObjectId(postId);
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+
+  if (!user.likedPosts.includes(postObjectId)) {
+    throw new Error("Post is not liked.");
+  }
+
+  user.likedPosts = user.likedPosts.filter(id => !id.equals(postObjectId));
+  await user.save();
+
+  post.likedBy = post.likedBy.filter(id => !id.equals(userObjectId));
+  await post.save();
+
+  return { likedPosts: user.likedPosts, likedBy: post.likedBy };
+};
+
+
+export const getAllLikedPostsQuery = async (userId: string) => {
+  return await dependencies.models.User.findById(userId).populate({
+    path: "likedPosts",
+    select: "caption location postImage totalLikes postedBy likedBy savedBy comments createdAt updatedAt",
+    populate: { path: "postedBy", select: "username profilePicture" },
+  });
+};
