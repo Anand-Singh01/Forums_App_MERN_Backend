@@ -8,6 +8,12 @@ export interface IAddPostData {
     location: string | null;
 }
 
+export interface ISavePostData {
+    postId: string;
+}
+
+
+
 export interface ServiceResponse<T = unknown> {
     status: boolean;
     statusCode: 401 | 500 | 400 | 200 | 404;
