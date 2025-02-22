@@ -1,9 +1,17 @@
 import {
+  addPostQuery,
+  deletePostQuery,
+  getAllPostsQuery,
+  getPostByPostIdQuery,
+  getPostsByUserIdQuery,
+  saveImageOnCloud,
+  updatePostQuery,
+} from "../../domain/queries/post";
+import {
   IAddPostData,
   IUpdatePostData,
   ServiceResponse,
 } from "../../util/interfaces";
-import dependencies from "../dependencies";
 
 export const addPost = async (
   userId: string,
@@ -21,20 +29,13 @@ export const addPost = async (
     let postImage: string | undefined;
     const { caption, location } = data;
     if (fileContent) {
-      const myCloud = await dependencies.cloud.v2.uploader.upload(fileContent);
-      postImage = myCloud.secure_url;
+      postImage = await saveImageOnCloud(fileContent);
     }
     if (!postImage) {
       response.statusCode = 400;
       throw new Error("image is required.");
     }
-    const post = new dependencies.models.Post({
-      caption,
-      location,
-      postImage,
-      postedBy: userId,
-    });
-    const savedPost = await post.save();
+    const savedPost = await addPostQuery(caption, location, postImage, userId);
     response.data = savedPost;
   } catch (error) {
     response.status = false;
@@ -56,7 +57,7 @@ export const getPostById = async (postId: string) => {
   };
 
   try {
-    const post = await dependencies.models.Post.findById(postId);
+    const post = await getPostByPostIdQuery(postId);
     if (!post) {
       response.statusCode = 404;
       throw new Error("post not found.");
@@ -82,7 +83,7 @@ export const getAllPosts = async () => {
   };
 
   try {
-    const post = await dependencies.models.Post.find();
+    const post = await getAllPostsQuery();
     if (!post) {
       response.statusCode = 404;
       throw new Error("post not found.");
@@ -111,21 +112,7 @@ export const updatePost = async (
   };
 
   try {
-    const post = await dependencies.models.Post.findById(data.postId);
-    if (!post) {
-      response.statusCode = 404;
-      throw new Error("post not found to update.");
-    }
-    post.location = data.location;
-    post.caption = data.caption;
-    if (data.isImageUpdated && fileContent) {
-      const myCloud = await dependencies.cloud.v2.uploader.upload(fileContent);
-      post.postImage = myCloud.secure_url;
-    } else if (data.isImageUpdated && !fileContent) {
-      response.statusCode = 400;
-      throw new Error("image is required to update.");
-    }
-    await post.save();
+    const post = await updatePostQuery(data, fileContent);
     response.data = post;
   } catch (error) {
     response.status = false;
@@ -147,9 +134,7 @@ export const deletePost = async (postId: string) => {
   };
 
   try {
-    const deletedPost = await dependencies.models.Post.findByIdAndDelete(
-      postId
-    );
+    const deletedPost = await deletePostQuery(postId);
     if (!deletedPost) {
       response.statusCode = 404;
       throw new Error("Post not found.");
@@ -175,7 +160,7 @@ export const getMyPosts = async (userId: string) => {
   };
 
   try {
-    const posts = await dependencies.models.Post.find({ postedBy: userId });
+    const posts = await getPostsByUserIdQuery(userId);
     response.data = posts;
   } catch (error) {
     response.status = false;
