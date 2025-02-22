@@ -1,4 +1,5 @@
 import dependencies from "../../infrastructure/dependencies";
+import mongoose from "mongoose";
 import { IUpdatePostData } from "../../util/interfaces";
 
 export const saveImageOnCloud = async (fileContent: string) => {
@@ -58,4 +59,64 @@ export const deletePostQuery = async (postId: string) => {
 
 export const getPostsByUserIdQuery = async (userId: string) => {
   return await dependencies.models.Post.find({ postedBy: userId });
+};
+
+
+export const savePostQuery = async (userId: string, postId: string) => {
+  const post = await dependencies.models.Post.findById(postId);
+  if (!post) throw new Error("Post not found.");
+
+  const user = await dependencies.models.User.findById(userId);
+  if (!user) throw new Error("User not found.");
+
+  const postObjectId = new mongoose.Types.ObjectId(postId);
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+
+  if (user.savedPosts.includes(postObjectId)) {
+    throw new Error("Post is already saved.");
+  }
+
+  user.savedPosts.push(postObjectId);
+  await user.save();
+
+  if (!post.savedBy.includes(userObjectId)) {
+    post.savedBy.push(userObjectId);
+    await post.save();
+  }
+
+  return { savedPosts: user.savedPosts, savedBy: post.savedBy };
+};
+
+export const unsavePostQuery = async (userId: string, postId: string) => {
+  const post = await dependencies.models.Post.findById(postId);
+  if (!post) throw new Error("Post not found.");
+
+  const user = await dependencies.models.User.findById(userId);
+  if (!user) throw new Error("User not found.");
+
+  const postObjectId = new mongoose.Types.ObjectId(postId);
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+
+  if (!user.savedPosts.includes(postObjectId)) {
+    throw new Error("Post is not saved.");
+  }
+
+  user.savedPosts = user.savedPosts.filter(id => !id.equals(postObjectId));
+  await user.save();
+
+  post.savedBy = post.savedBy.filter(id => !id.equals(userObjectId));
+  await post.save();
+
+  return { savedPosts: user.savedPosts, savedBy: post.savedBy };
+};
+
+
+export const getAllSavedPostsQuery = async (userId: string) => {
+  return await dependencies.models.User.findById(userId).populate({
+
+    path: "savedPosts",
+    select: "caption location postImage totalLikes postedBy likedBy savedBy comments createdAt updatedAt",
+    populate: { path: "postedBy", select: "username profilePicture" },
+
+  });
 };

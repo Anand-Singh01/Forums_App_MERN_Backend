@@ -1,18 +1,14 @@
 import {
-  addPostQuery,
-  deletePostQuery,
-  getAllPostsQuery,
-  getPostByPostIdQuery,
-  getPostsByUserIdQuery,
-  saveImageOnCloud,
-  updatePostQuery,
-} from "../../domain/queries/post";
-import {
   IAddPostData,
   ISavePostData,
   IUpdatePostData,
   ServiceResponse,
 } from "../../util/interfaces";
+import dependencies from "../dependencies";
+import mongoose from "mongoose";
+import { Request, Response, NextFunction } from "express";
+import { getAllSavedPostsQuery, savePostQuery, unsavePostQuery } from "../../domain/queries/post";
+
 
 export const addPost = async (
   userId: string,
@@ -30,13 +26,20 @@ export const addPost = async (
     let postImage: string | undefined;
     const { caption, location } = data;
     if (fileContent) {
-      postImage = await saveImageOnCloud(fileContent);
+      const myCloud = await dependencies.cloud.v2.uploader.upload(fileContent);
+      postImage = myCloud.secure_url;
     }
     if (!postImage) {
       response.statusCode = 400;
       throw new Error("image is required.");
     }
-    const savedPost = await addPostQuery(caption, location, postImage, userId);
+    const post = new dependencies.models.Post({
+      caption,
+      location,
+      postImage,
+      postedBy: userId,
+    });
+    const savedPost = await post.save();
     response.data = savedPost;
   } catch (error) {
     response.status = false;
@@ -58,7 +61,7 @@ export const getPostById = async (postId: string) => {
   };
 
   try {
-    const post = await getPostByPostIdQuery(postId);
+    const post = await dependencies.models.Post.findById(postId);
     if (!post) {
       response.statusCode = 404;
       throw new Error("post not found.");
@@ -84,7 +87,7 @@ export const getAllPosts = async () => {
   };
 
   try {
-    const post = await getAllPostsQuery();
+    const post = await dependencies.models.Post.find();
     if (!post) {
       response.statusCode = 404;
       throw new Error("post not found.");
@@ -113,7 +116,21 @@ export const updatePost = async (
   };
 
   try {
-    const post = await updatePostQuery(data, fileContent);
+    const post = await dependencies.models.Post.findById(data.postId);
+    if (!post) {
+      response.statusCode = 404;
+      throw new Error("post not found to update.");
+    }
+    post.location = data.location;
+    post.caption = data.caption;
+    if (data.isImageUpdated && fileContent) {
+      const myCloud = await dependencies.cloud.v2.uploader.upload(fileContent);
+      post.postImage = myCloud.secure_url;
+    } else if (data.isImageUpdated && !fileContent) {
+      response.statusCode = 400;
+      throw new Error("image is required to update.");
+    }
+    await post.save();
     response.data = post;
   } catch (error) {
     response.status = false;
@@ -135,7 +152,9 @@ export const deletePost = async (postId: string) => {
   };
 
   try {
-    const deletedPost = await deletePostQuery(postId);
+    const deletedPost = await dependencies.models.Post.findByIdAndDelete(
+      postId
+    );
     if (!deletedPost) {
       response.statusCode = 404;
       throw new Error("Post not found.");
@@ -161,7 +180,7 @@ export const getMyPosts = async (userId: string) => {
   };
 
   try {
-    const posts = await getPostsByUserIdQuery(userId);
+    const posts = await dependencies.models.Post.find({ postedBy: userId });
     response.data = posts;
   } catch (error) {
     response.status = false;
@@ -184,42 +203,9 @@ export const savePost = async (userId: string, data: ISavePostData): Promise<Ser
     data: null,
   };
 
-  try {
-    const { postId } = data;
-
-    // Post Exists?
-    const post = await dependencies.models.Post.findById(postId);
-    if (!post) {
-      response.statusCode = 404;
-      throw new Error("Post not found.");
-    }
-
-    // User Exists?
-    const user = await dependencies.models.User.findById(userId);
-    if (!user) {
-      response.statusCode = 404;
-      throw new Error("User not found.");
-    }
-
-    const postObjectId = new mongoose.Types.ObjectId(postId);
-    const userObjectId = new mongoose.Types.ObjectId(userId);
-
-    // Duplicate Save?
-    if (user.savedPosts.includes(postObjectId)) {
-      response.message = "Post is already saved.";
-      return response;
-    }
-
-
-    user.savedPosts.push(postObjectId);
-    await user.save();
-
-    if (!post.savedBy.includes(userObjectId)) {
-      post.savedBy.push(userObjectId);
-      await post.save();
-    }
-
-    response.data = { savedPosts: user.savedPosts, savedBy: post.savedBy };
+  try{
+    const result = await savePostQuery(userId, data.postId);
+    response.data = result;
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "Unexpected error occurred";
@@ -239,38 +225,9 @@ export const unsavePost = async (userId: string, data: ISavePostData): Promise<S
   };
 
   try {
-    const { postId } = data;
-
-    // Post Exists?
-    const post = await dependencies.models.Post.findById(postId);
-    if (!post) {
-      response.statusCode = 404;
-      throw new Error("Post not found.");
-    }
-
-    // User Exists?
-    const user = await dependencies.models.User.findById(userId);
-    if (!user) {
-      response.statusCode = 404;
-      throw new Error("User not found.");
-    }
-
-    const postObjectId = new mongoose.Types.ObjectId(postId);
-    const userObjectId = new mongoose.Types.ObjectId(userId);
-
-    // Duplicate Save?
-    if (!user.savedPosts.includes(postObjectId)) {
-      response.message = "Post is not saved.";
-      return response;
-    }
-
-    user.savedPosts = user.savedPosts.filter(id => !id.equals(postObjectId));
-    await user.save();
-
-    post.savedBy = post.savedBy.filter(id => !id.equals(userObjectId));
-    await post.save();
-
-    response.data = { savedPosts: user.savedPosts, savedBy: post.savedBy };
+    const result = await unsavePostQuery(userId, data.postId);
+    response.data = result;
+    
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "Unexpected error occurred";
@@ -283,7 +240,7 @@ export const unsavePost = async (userId: string, data: ISavePostData): Promise<S
 
 export const getAllSavedPosts = async (userId: string): Promise<ServiceResponse> => {
   let response: ServiceResponse = {
-    message: "Got all saved posts successfully",
+    message: "Got all saved posts from user successfully",
     status: true,
     statusCode: 200,
     data: null,
@@ -291,13 +248,8 @@ export const getAllSavedPosts = async (userId: string): Promise<ServiceResponse>
 
   try {
     // User Exists?
-    const user = await dependencies.models.User.findById(userId).populate({
-      path: "savedPosts",
-      select: "caption location postImage totalLikes postedBy likedBy savedBy comments createdAt updatedAt",
-      populate: { path: "postedBy", select: "username profilePicture" }, 
-
-    });
-
+    const user = await getAllSavedPostsQuery(userId);
+  
     if (!user) {
       response.statusCode = 404;
       throw new Error("User not found.");
