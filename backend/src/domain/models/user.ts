@@ -1,7 +1,25 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
+import { IPost } from "./post";
+import { IProfile } from "./profile";
+
+export interface IUser {
+  _id: Types.ObjectId;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  userName: string;
+  dob: Date;
+  writtenPosts: Types.ObjectId[] | IPost[];
+  likedPosts: Types.ObjectId[] | IPost[];
+  savedPosts: Types.ObjectId[] | IPost[];
+  profile: Types.ObjectId | IProfile;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 // User Schema
-const userSchema = new Schema({
+const userSchema = new Schema<IUser>({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -16,4 +34,4 @@ const userSchema = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export const User = model("User", userSchema);
+export const User = model<IUser>("User", userSchema);

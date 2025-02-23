@@ -1,14 +1,16 @@
+import { postDto } from "../../domain/dto/postDto";
 import {
   addPostQuery,
   deletePostQuery,
   getAllPostsQuery,
-  getPostByPostIdQuery,
+  getPostByIdQuery,
   getPostsByUserIdQuery,
   saveImageOnCloud,
   updatePostQuery,
 } from "../../domain/queries/post";
 import {
   IAddPostData,
+  IPostDto,
   IUpdatePostData,
   ServiceResponse
 } from "../../util/interfaces";
@@ -27,7 +29,7 @@ export const addPost = async (
 
   try {
     let postImage: string | undefined;
-    const { caption, location } = data;
+    const { caption, region } = data;
     if (fileContent) {
       postImage = await saveImageOnCloud(fileContent);
     }
@@ -35,8 +37,8 @@ export const addPost = async (
       response.statusCode = 400;
       throw new Error("image is required.");
     }
-    const savedPost = await addPostQuery(caption, location, postImage, userId);
-    response.data = savedPost;
+    const savedPost = await addPostQuery(caption, region, postImage, userId);
+    response.data = postDto(savedPost);
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
@@ -57,12 +59,12 @@ export const getPostById = async (postId: string) => {
   };
 
   try {
-    const post = await getPostByPostIdQuery(postId);
+    const post = await getPostByIdQuery(postId);
     if (!post) {
       response.statusCode = 404;
       throw new Error("post not found.");
     }
-    response.data = post;
+    response.data = postDto(post);
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
@@ -84,11 +86,11 @@ export const getAllPosts = async () => {
 
   try {
     const post = await getAllPostsQuery();
-    if (!post) {
-      response.statusCode = 404;
-      throw new Error("post not found.");
-    }
-    response.data = post;
+    let modifiedPosts: IPostDto[] = [];
+    post.forEach((p) => {
+      modifiedPosts.push(postDto(p));
+    });
+    response.data = modifiedPosts;
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
@@ -113,7 +115,7 @@ export const updatePost = async (
 
   try {
     const post = await updatePostQuery(data, fileContent);
-    response.data = post;
+    response.data = postDto(post);
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
@@ -139,7 +141,8 @@ export const deletePost = async (postId: string) => {
       response.statusCode = 404;
       throw new Error("Post not found.");
     }
-    response.data = deletedPost;
+    response.message = "Post deleted successfully";
+    response.data = { postId };
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
@@ -161,7 +164,11 @@ export const getMyPosts = async (userId: string) => {
 
   try {
     const posts = await getPostsByUserIdQuery(userId);
-    response.data = posts;
+    let modifiedPosts: IPostDto[] = [];
+    posts.forEach((p) => {
+      modifiedPosts.push(postDto(p));
+    });
+    response.data = modifiedPosts;
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";

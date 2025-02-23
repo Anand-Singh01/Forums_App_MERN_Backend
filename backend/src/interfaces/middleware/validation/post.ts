@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { IUpdatePostData, ServiceResponse } from "../../../util/interfaces";
 import {
-    addPostSchema,
-    deletePostSchema,
-    updatePostSchema,
+  addPostSchema,
+  deletePostSchema,
+  updatePostSchema,
 } from "../zod/zodSchema";
 
 export const addPostValidation = (
@@ -101,9 +101,9 @@ export const deletePostValidation = (
   };
 
   try {
-    const data = req.params;
+    const {postId} = req.params;
 
-    const validation = deletePostSchema.safeParse(data);
+    const validation = deletePostSchema.safeParse({postId});
     if (!validation.success) {
       response.statusCode = 400;
       response.data = validation.error.flatten().fieldErrors;
@@ -121,7 +121,6 @@ export const deletePostValidation = (
       .json({ msg: response.message, data: response.data });
   }
 };
-
 
 export const getPostByIdValidation = (
     req: Request,
@@ -155,4 +154,4 @@ export const getPostByIdValidation = (
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });
     }
-  };
+};

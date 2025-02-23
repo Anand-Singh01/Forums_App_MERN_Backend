@@ -73,7 +73,7 @@ postRoutes.get(
 );
 
 // Get all posts
-postRoutes.get("/get-allPosts", async (req: Request, res: Response) => {
+postRoutes.get("/get-trending-post", async (req: Request, res: Response) => {
   try {
     const response: ServiceResponse = await getAllPosts();
     res
@@ -94,7 +94,7 @@ postRoutes.put(
       const data: IUpdatePostData = req.body;
       const file: Express.Multer.File | undefined = req.file;
       let fileContent: string | undefined = undefined;
-      if (data.isImageUpdated && file) {
+      if (data.isImageUpdated.toLocaleLowerCase() === "true" && file) {
         fileContent = getDataUri(file).content;
       }
       const response: ServiceResponse = await updatePost(data, fileContent);

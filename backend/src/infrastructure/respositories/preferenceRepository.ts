@@ -21,7 +21,7 @@ export const updateProfile = async (
     }
 
     profile.profileName = data.name; 
-    profile.profileDesctipion = data.description; 
+    profile.profileDescription = data.description; 
 
     if (data.isImageUpdated && fileContent) {
       const myCloud = await dependencies.cloud.v2.uploader.upload(fileContent); 

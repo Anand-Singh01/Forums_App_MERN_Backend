@@ -1,11 +1,11 @@
 export interface ITokenData {
-    userId: string;
-    email: string;
+  userId: string;
+  email: string;
 }
 
 export interface IAddPostData {
-    caption: string;
-    location: string | null;
+  caption: string;
+  region: string | null;
 }
 
 export interface ISavePostData {
@@ -20,59 +20,100 @@ export interface ILikePostData {
 
 
 export interface ServiceResponse<T = unknown> {
-    status: boolean;
-    statusCode: 401 | 500 | 400 | 200 | 404;
-    message: string | null;
-    data: T | null;
+  status: boolean;
+  statusCode: 401 | 500 | 400 | 200 | 404;
+  message: string | null;
+  data: T | null;
 }
 
-
-export interface IRegisterUser{
- email: string;
-    password: string;  
-    firstName: string;
-    lastName: string;
-    userName: string;
-    dob: Date; 
+export interface IRegisterUser {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  userName: string;
+  dob: Date;
 }
 
-export interface ILoginUser{
-    email: string;
-    password: string;
+export interface ILoginUser {
+  email: string;
+  password: string;
 }
 export interface IUpdatePostData {
-    postId:string,
-    caption:string;
-    location:string | null;
-    isImageUpdated:boolean;
+  postId: string;
+  caption: string;
+  region: string | null;
+  isImageUpdated: string;
 }
 
 export interface IUpdateProfileData {
-    name: string; 
-    description: string; 
-    isImageUpdated: boolean; 
-  }
-  
-
+  name: string;
+  description: string;
+  isImageUpdated: boolean;
+}
 
 export interface ICreateComment {
-    postId:string,
-    comment:string,
+  postId: string;
+  comment: string;
 }
 
 export interface ICreateReply {
-    postId:string,
-    commentId:string,
-    reply:string,
+  commentId: string;
+  reply: string;
 }
 
 export interface IUpdateComment {
-    commentId:string,
-    comment:string,
+  commentId: string;
+  comment: string;
 }
 
 export interface IUpdateReply {
-    replyId:string,
-    reply:string,
+  replyId: string;
+  reply: string;
 }
-   
+
+export interface ICommentDto {
+  commentId: string;
+  comment: string;
+  isEdited: boolean;
+  postId: string;
+  commentedBy: {
+    userId: string;
+    userName: string;
+    profilePicture: string;
+  };
+  replyCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IReplyDto {
+  replyId: string;
+  reply: string;
+  isEdited: boolean;
+  commentId: string;
+  replyBy: {
+    userId: string;
+    userName: string;
+    profilePicture: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IPostDto{
+  postId:string;
+  caption: string;
+  region: string | null;
+  postImage: string;
+  postedBy: {
+    userId: string;
+    userName: string;
+    profilePicture: string;
+  }
+  totalLikes: number;
+  totalSave: number;
+  totalComments: number;
+  createdAt: Date;
+  updatedAt: Date;
+}

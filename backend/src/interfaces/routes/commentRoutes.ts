@@ -4,7 +4,8 @@ import {
   addReply,
   deleteComment,
   deleteReply,
-  getCommentAndReply,
+  getAllComments,
+  getAllReply,
   updateComment,
   updateReply,
 } from "../../infrastructure/respositories/commentRepository";
@@ -15,44 +16,28 @@ import {
   IUpdateComment,
   IUpdateReply,
 } from "../../util/interfaces";
+import {
+  addCommentValidation,
+  addReplyValidation,
+  deleteCommentValidation,
+  deleteReplyValidation,
+  getAllCommentValidation,
+  getAllReplyValidation,
+  updateCommentValidation,
+  updateReplyValidation,
+} from "../middleware/validation/comment";
 
 const commentRoutes = Router();
 
 // Adds a comment under a post
-commentRoutes.post("/add-comment", async (req: Request, res: Response) => {
-  try {
-    const { userId } = res.locals.jwtData;
-    const data: ICreateComment = req.body;
-    const response = await addComment(userId, data);
-    res
-      .status(response.statusCode)
-      .json({ msg: response.message, data: response.data });
-  } catch (error) {
-    return serverError(res, error);
-  }
-});
-
-// Adds a reply under a comment
-commentRoutes.post("/add-reply", async (req: Request, res: Response) => {
-  try {
-    const { userId } = res.locals.jwtData;
-    const data: ICreateReply = req.body;
-    const response = await addReply(userId, data);
-    res
-      .status(response.statusCode)
-      .json({ msg: response.message, data: response.data });
-  } catch (error) {
-    return serverError(res, error);
-  }
-});
-
-//  Sends all comments and their reply's
-commentRoutes.get(
-  "/get-comment-and-reply/:postId",
+commentRoutes.post(
+  "/add-comment",
+  addCommentValidation,
   async (req: Request, res: Response) => {
     try {
-      const { postId } = req.params;
-      const response = await getCommentAndReply(postId);
+      const { userId } = res.locals.jwtData;
+      const data: ICreateComment = req.body;
+      const response = await addComment(userId, data);
       res
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });
@@ -62,35 +47,44 @@ commentRoutes.get(
   }
 );
 
-//  Update a comment
-commentRoutes.post("/updateComment", async (req: Request, res: Response) => {
-  try {
-    const data: IUpdateComment = req.body;
-    const response = await updateComment(data);
-    res
-      .status(response.statusCode)
-      .json({ msg: response.message, data: response.data });
-  } catch (error) {
-    return serverError(res, error);
-  }
-});
-
-//  Update a reply
-commentRoutes.post("/updateReply", async (req: Request, res: Response) => {
-  try {
-    const data: IUpdateReply = req.body;
-    const response = await updateReply(data);
-    res
-      .status(response.statusCode)
-      .json({ msg: response.message, data: response.data });
-  } catch (error) {
-    return serverError(res, error);
-  }
-});
-
-//  Delete a comment
+// get all comments
 commentRoutes.get(
+  "/get-all-comments/:postId",
+  getAllCommentValidation,
+  async (req: Request, res: Response) => {
+    try {
+      const { postId } = req.params;
+      const response = await getAllComments(postId);
+      res
+        .status(response.statusCode)
+        .json({ msg: response.message, data: response.data });
+    } catch (error) {
+      return serverError(res, error);
+    }
+  }
+);
+
+// Update a comment
+commentRoutes.put(
+  "/update-comment",
+  updateCommentValidation,
+  async (req: Request, res: Response) => {
+    try {
+      const data: IUpdateComment = req.body;
+      const response = await updateComment(data);
+      res
+        .status(response.statusCode)
+        .json({ msg: response.message, data: response.data });
+    } catch (error) {
+      return serverError(res, error);
+    }
+  }
+);
+
+// Delete a comment
+commentRoutes.delete(
   "/delete-comment/:commentId",
+  deleteCommentValidation,
   async (req: Request, res: Response) => {
     try {
       const { commentId } = req.params;
@@ -104,9 +98,62 @@ commentRoutes.get(
   }
 );
 
-//  Delete a reply
+// Adds a reply under a comment
+commentRoutes.post(
+  "/add-reply",
+  addReplyValidation,
+  async (req: Request, res: Response) => {
+    try {
+      const { userId } = res.locals.jwtData;
+      const data: ICreateReply = req.body;
+      const response = await addReply(userId, data);
+      res
+        .status(response.statusCode)
+        .json({ msg: response.message, data: response.data });
+    } catch (error) {
+      return serverError(res, error);
+    }
+  }
+);
+
+// get all reply
 commentRoutes.get(
+  "/get-all-reply/:commentId",
+  getAllReplyValidation,
+  async (req: Request, res: Response) => {
+    try {
+      const { commentId } = req.params;
+      const response = await getAllReply(commentId);
+      res
+        .status(response.statusCode)
+        .json({ msg: response.message, data: response.data });
+    } catch (error) {
+      return serverError(res, error);
+    }
+  }
+);
+
+// Update a reply
+commentRoutes.put(
+  "/update-reply",
+  updateReplyValidation,
+  async (req: Request, res: Response) => {
+    try {
+      const data: IUpdateReply = req.body;
+      const response = await updateReply(data);
+      res
+        .status(response.statusCode)
+        .json({ msg: response.message, data: response.data });
+    } catch (error) {
+      return serverError(res, error);
+    }
+  }
+);
+
+// Delete a reply
+commentRoutes.delete(
   "/delete-reply/:replyId",
+  deleteReplyValidation,
   async (req: Request, res: Response) => {
     try {
       const { replyId } = req.params;

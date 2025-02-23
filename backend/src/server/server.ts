@@ -4,6 +4,7 @@ import express from "express";
 import { connectToDatabase } from "../infrastructure/database/mongo/connection";
 import dependencies from "../infrastructure/dependencies";
 import authRoutes from "../interfaces/routes/authRoutes";
+import commentRoutes from "../interfaces/routes/commentRoutes";
 import postRoutes from "../interfaces/routes/postRoutes";
 import preferenceRoutes from "../interfaces/routes/preferenceRoutes";
 import { verifyToken } from "../util/token";
@@ -28,6 +29,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use(verifyToken);
 app.use("/api/post", postRoutes);
+app.use("/api/comment", commentRoutes);
 app.use("/api/preference", preferenceRoutes); 
 app.use("/api/save", savePostRoutes);
 app.use("/api/like", likePostRoutes);
