@@ -1,11 +1,25 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
+import { IComment } from "./comment";
+import { IUser } from "./user";
+
+export interface IPost extends Document {
+  _id: Types.ObjectId;
+  caption: string;
+  region: string | null;
+  postImage: string;
+  postedBy: Types.ObjectId | IUser;
+  likedBy: Types.ObjectId[] | IUser[];
+  savedBy: Types.ObjectId[] | IUser[];
+  comments: Types.ObjectId[] | IComment[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 // Post Schema
-const postSchema = new Schema({
+const postSchema = new Schema<IPost>({
   caption: { type: String, required: true },
-  location: { type: String, required: false },
+  region: { type: String, default: "" },
   postImage: { type: String, required: true },
-  totalLikes: { type: Number, default: 0 },
   postedBy: { type: Schema.Types.ObjectId, ref: "User" },
   likedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
   savedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
@@ -14,4 +28,4 @@ const postSchema = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export const Post = model("Post", postSchema);
+export const Post = model<IPost>("Post", postSchema);
