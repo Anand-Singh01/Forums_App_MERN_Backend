@@ -1,7 +1,7 @@
 import {
-  getAllLikedPostsQuery,
-  likePostQuery,
-  unlikePostQuery,
+    getAllLikedPostsQuery,
+    likePostQuery,
+    unlikePostQuery,
 } from "../../domain/queries/post";
 import { ILikePostData, ServiceResponse } from "../../util/interfaces";
 

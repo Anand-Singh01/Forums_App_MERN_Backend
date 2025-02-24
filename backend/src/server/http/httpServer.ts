@@ -6,6 +6,7 @@ import { connectToDatabase } from "../../infrastructure/database/mongo/connectio
 import dependencies from "../../infrastructure/dependencies";
 import authRoutes from "../../interfaces/routes/authRoutes";
 import commentRoutes from "../../interfaces/routes/commentRoutes";
+import followRoutes from "../../interfaces/routes/followRoutes";
 import postRoutes from "../../interfaces/routes/postRoutes";
 import preferenceRoutes from "../../interfaces/routes/preferenceRoutes";
 import { verifyToken } from "../../util/token";
@@ -31,6 +32,7 @@ app.use(verifyToken);
 app.use("/api/post", postRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/preference", preferenceRoutes);
+app.use("/api/follow", followRoutes);
 // app.use("/api/save", savePostRoutes);
 // app.use("/api/like", likePostRoutes);
 

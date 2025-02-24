@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import dependencies from "../../infrastructure/dependencies";
 import { IUpdatePostData } from "../../util/interfaces";
 // Saves image on cloud and returns the url.

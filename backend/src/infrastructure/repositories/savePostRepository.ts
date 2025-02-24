@@ -1,7 +1,7 @@
 import {
-  getAllLikedPostsQuery,
-  savePostQuery,
-  unsavePostQuery
+    getAllLikedPostsQuery,
+    savePostQuery,
+    unsavePostQuery
 } from "../../domain/queries/post";
 import { ISavePostData, ServiceResponse } from "../../util/interfaces";
 

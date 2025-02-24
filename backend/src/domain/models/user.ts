@@ -13,6 +13,8 @@ export interface IUser {
   writtenPosts: Types.ObjectId[] | IPost[];
   likedPosts: Types.ObjectId[] | IPost[];
   savedPosts: Types.ObjectId[] | IPost[];
+  following: Types.ObjectId[] | IUser[];
+  followers: Types.ObjectId[] | IUser[];
   profile: Types.ObjectId | IProfile;
   createdAt: Date;
   updatedAt: Date;
@@ -25,6 +27,8 @@ const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   userName: { type: String, required: true, unique: true },
+  following: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   dob: { type: Date, required: true },
   writtenPosts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
   likedPosts: [{ type: Schema.Types.ObjectId, ref: "Post" }],

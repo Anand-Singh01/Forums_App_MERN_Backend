@@ -117,3 +117,9 @@ export interface IPostDto{
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface IFollowerDto{
+  userId:string;
+  profilePicture: string;
+  userName:string;
+}

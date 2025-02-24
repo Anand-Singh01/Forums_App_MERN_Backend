@@ -26,12 +26,15 @@ export const updatePostSchema = z.object({
     .max(100, { message: "Location can be at most 100 characters long." })
     .nullable()
     .optional(),
-    isImageUpdated: z
+  isImageUpdated: z
     .string()
-    .refine((val) => val.toLowerCase() === 'true' || val.toLowerCase() === 'false', {
-      message:"Invalid isImageUpdated value."
-    })
-    // .transform((val) => val.toLowerCase === 'true')
+    .refine(
+      (val) => val.toLowerCase() === "true" || val.toLowerCase() === "false",
+      {
+        message: "Invalid isImageUpdated value.",
+      }
+    ),
+  // .transform((val) => val.toLowerCase === 'true')
 });
 export const deletePostSchema = z.object({
   postId: z.string().refine((val) => ObjectId.isValid(val), {
@@ -128,4 +131,11 @@ export const deleteReplySchema = z.object({
     .refine((val) => ObjectId.isValid(val), {
       message: "Invalid ReplyId",
     }),
+});
+
+// follow
+export const updateFollowSchema = z.object({
+  friendId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid FriendId",
+  }),
 });
