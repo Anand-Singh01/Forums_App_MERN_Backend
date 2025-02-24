@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import { IncomingMessage } from "http";
 import jwt, {
-    JsonWebTokenError,
-    SignOptions,
-    TokenExpiredError,
+  JsonWebTokenError,
+  SignOptions,
+  TokenExpiredError,
 } from "jsonwebtoken";
 import dependencies from "../infrastructure/dependencies";
 import { serverError, unauthorizedError } from "../util/helper";
@@ -13,10 +14,7 @@ const COOKIE_NAME: string =
 const JWT_SECRET = dependencies.config.cookie.jwtSecret || "secret";
 const ENVIRONMENT: string = dependencies.config.environment;
 
-export const createToken = (
-  data: ITokenData,
-  expiresIn: string
-): string => {
+export const createToken = (data: ITokenData, expiresIn: string): string => {
   return jwt.sign(data, JWT_SECRET, {
     expiresIn: expiresIn as SignOptions["expiresIn"],
   });
@@ -33,7 +31,6 @@ export const verifyToken = (
       unauthorizedError(res, "unauthorized");
     } else {
       const data = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
-
       const jwtData: ITokenData = {
         userId: data.userId,
         email: data.email,
@@ -76,4 +73,12 @@ export const setTokenAndCookie = (
     secure: true,
     signed: true,
   });
+};
+
+export const verifyWsToken = (req: IncomingMessage) => {
+  const payload: any = jwt.verify(
+    req.headers.auth_token as string,
+    dependencies.config.cookie.jwtSecret!
+  );
+  return { email: payload.email, userId: payload.userId } as ITokenData;
 };

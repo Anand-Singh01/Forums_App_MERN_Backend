@@ -1,6 +1,6 @@
-import express, { Request, Router } from "express";
-import { likePost, unlikePost, getAllLikedPosts } from "../../infrastructure/respositories/likePostRepository";
-import { ILikePostData, ISavePostData, ServiceResponse } from "../../util/interfaces";
+import { Router } from "express";
+import { getAllLikedPosts, likePost, unlikePost } from "../../infrastructure/repositories/likePostRepository";
+import { ILikePostData } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 
 const likePostRoutes = Router();

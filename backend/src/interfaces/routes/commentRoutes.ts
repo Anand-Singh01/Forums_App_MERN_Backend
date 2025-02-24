@@ -8,7 +8,7 @@ import {
   getAllReply,
   updateComment,
   updateReply,
-} from "../../infrastructure/respositories/commentRepository";
+} from "../../infrastructure/repositories/commentRepository";
 import { serverError } from "../../util/helper";
 import {
   ICreateComment,

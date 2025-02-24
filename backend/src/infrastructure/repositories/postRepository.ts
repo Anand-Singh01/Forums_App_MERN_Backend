@@ -12,7 +12,7 @@ import {
   IAddPostData,
   IPostDto,
   IUpdatePostData,
-  ServiceResponse
+  ServiceResponse,
 } from "../../util/interfaces";
 
 export const addPost = async (

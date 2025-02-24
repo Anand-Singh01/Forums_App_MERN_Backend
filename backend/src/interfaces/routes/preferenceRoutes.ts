@@ -1,8 +1,7 @@
 import { Request, Response, Router } from "express";
-import { updateProfile } from "../../infrastructure/respositories/preferenceRepository";
+import { updateProfile } from "../../infrastructure/repositories/preferenceRepository";
 import { serverError } from "../../util/helper";
 import { IUpdateProfileData, ServiceResponse } from "../../util/interfaces";
-import { verifyToken } from "../../util/token";
 import getDataUri from "../middleware/cloud/dataUri";
 import singleUpload from "../middleware/cloud/multer";
 

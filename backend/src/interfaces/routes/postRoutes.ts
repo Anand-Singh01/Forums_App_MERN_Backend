@@ -6,7 +6,7 @@ import {
   getMyPosts,
   getPostById,
   updatePost,
-} from "../../infrastructure/respositories/postRepository";
+} from "../../infrastructure/repositories/postRepository";
 import { serverError } from "../../util/helper";
 import {
   IAddPostData,

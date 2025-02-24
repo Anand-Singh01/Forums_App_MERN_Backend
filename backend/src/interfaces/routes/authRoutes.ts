@@ -1,21 +1,24 @@
-import express, { NextFunction, Request, Response } from 'express';
-import bcrypt from 'bcrypt';
-import { User } from '../../domain/models/user';
-import jwt from 'jsonwebtoken';
-import { loginUser, logoutUser, registerUser } from '../../infrastructure/respositories/userRepository';
-import { serverError, unauthorizedError, success, badRequest } from '../../util/helper';
-import { ILoginUser, IRegisterUser } from '../../util/interfaces';
-import { verifyToken } from '../../util/token';
-
-
+import express, { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import dependencies from "../../infrastructure/dependencies";
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+} from "../../infrastructure/repositories/userRepository";
+import { serverError } from "../../util/helper";
+import { ILoginUser, IRegisterUser } from "../../util/interfaces";
+import { verifyToken } from "../../util/token";
 
 const authRoutes = express.Router();
 
 authRoutes.post("/register", async (req: Request, res: Response) => {
   try {
-    const data : IRegisterUser = req.body;
+    const data: IRegisterUser = req.body;
     const response = await registerUser(data, res);
-    res.status(response.statusCode).json({ message: response.message, data: response.data });
+    res
+      .status(response.statusCode)
+      .json({ message: response.message, data: response.data });
   } catch (error) {
     serverError(res, error);
   }
@@ -23,9 +26,11 @@ authRoutes.post("/register", async (req: Request, res: Response) => {
 
 authRoutes.post("/login", async (req: Request, res: Response) => {
   try {
-    const data : ILoginUser = req.body;
+    const data: ILoginUser = req.body;
     const response = await loginUser(data, res);
-    res.status(response.statusCode).json({ message: response.message, data: response.data });
+    res
+      .status(response.statusCode)
+      .json({ message: response.message, data: response.data });
   } catch (error) {
     serverError(res, error);
   }
@@ -36,10 +41,22 @@ authRoutes.get("/verify", verifyToken, async (req: Request, res: Response) => {
 });
 
 authRoutes.get("/logout", verifyToken, async (req: Request, res: Response) => {
-  const response =  await logoutUser(res);
-  res.status(response.statusCode).json({ message: response.message, data: response.data });
+  const response = await logoutUser(res);
+  res
+    .status(response.statusCode)
+    .json({ message: response.message, data: response.data });
 });
 
-
+authRoutes.get("/get-ws-token", verifyToken, (req: Request, res: Response) => {
+  const token = req.signedCookies[dependencies.config.cookie.cookieName!];
+  const decoded : any = jwt.verify(token, dependencies.config.cookie.jwtSecret!);
+  const wsToken = jwt.sign(
+    {userId:decoded.userId, email:decoded.email},
+    dependencies.config.cookie.jwtSecret!,
+    {
+      expiresIn: decoded.exp - Math.floor(Date.now() / 1000),
+    }
+  );
+  res.status(200).json({ wsToken });
+});
 export = authRoutes;
-

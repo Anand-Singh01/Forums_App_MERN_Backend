@@ -1,6 +1,6 @@
-import express, { Request, Router } from "express";
-import { savePost, unsavePost, getAllSavedPosts } from "../../infrastructure/respositories/savePostRepository";
-import { ISavePostData, ServiceResponse } from "../../util/interfaces";
+import { Router } from "express";
+import { getAllSavedPosts, savePost, unsavePost } from "../../infrastructure/repositories/savePostRepository";
+import { ISavePostData } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 
 const savePostRoutes = Router();
