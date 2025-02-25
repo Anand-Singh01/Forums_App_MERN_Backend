@@ -109,140 +109,140 @@ export const getPostsByUserIdQuery = async (userId: string) => {
     .sort({ createdAt: -1 });
 };
 
-export const savePostQuery = async (userId: string, postId: string) => {
-  const post = await dependencies.models.Post.findById(postId);
+// export const savePostQuery = async (userId: string, postId: string) => {
+//   const post = await dependencies.models.Post.findById(postId);
 
-  if (!post) throw new Error("Post not found.");
+//   if (!post) throw new Error("Post not found.");
 
-  const user = await dependencies.models.User.findById(userId);
+//   const user = await dependencies.models.User.findById(userId);
 
-  if (!user) throw new Error("User not found.");
+//   if (!user) throw new Error("User not found.");
 
-  const postObjectId = new mongoose.Types.ObjectId(postId);
+//   const postObjectId = new mongoose.Types.ObjectId(postId);
 
-  const userObjectId = new mongoose.Types.ObjectId(userId);
+//   const userObjectId = new mongoose.Types.ObjectId(userId);
 
-  if (user.savedPosts.includes(postObjectId)) {
-    throw new Error("Post is already saved.");
-  }
+//   if (user.savedPosts.includes(postObjectId)) {
+//     throw new Error("Post is already saved.");
+//   }
 
-  user.savedPosts.push(postObjectId);
+//   user.savedPosts.push(postObjectId);
 
-  await user.save();
+//   await user.save();
 
-  if (!post.savedBy.includes(userObjectId)) {
-    post.savedBy.push(userObjectId);
+//   if (!post.savedBy.includes(userObjectId)) {
+//     post.savedBy.push(userObjectId);
 
-    await post.save();
-  }
+//     await post.save();
+//   }
 
-  return { savedPosts: user.savedPosts, savedBy: post.savedBy };
-};
+//   return { savedPosts: user.savedPosts, savedBy: post.savedBy };
+// };
 
-export const unsavePostQuery = async (userId: string, postId: string) => {
-  const post = await dependencies.models.Post.findById(postId);
+// export const unsavePostQuery = async (userId: string, postId: string) => {
+//   const post = await dependencies.models.Post.findById(postId);
 
-  if (!post) throw new Error("Post not found.");
+//   if (!post) throw new Error("Post not found.");
 
-  const user = await dependencies.models.User.findById(userId);
+//   const user = await dependencies.models.User.findById(userId);
 
-  if (!user) throw new Error("User not found.");
+//   if (!user) throw new Error("User not found.");
 
-  const postObjectId = new mongoose.Types.ObjectId(postId);
+//   const postObjectId = new mongoose.Types.ObjectId(postId);
 
-  const userObjectId = new mongoose.Types.ObjectId(userId);
+//   const userObjectId = new mongoose.Types.ObjectId(userId);
 
-  if (!user.savedPosts.includes(postObjectId)) {
-    throw new Error("Post is not saved.");
-  }
+//   if (!user.savedPosts.includes(postObjectId)) {
+//     throw new Error("Post is not saved.");
+//   }
 
-  user.savedPosts = user.savedPosts.filter((id) => !id.equals(postObjectId));
+//   user.savedPosts = user.savedPosts.filter((id) => !id.equals(postObjectId));
 
-  await user.save();
+//   await user.save();
 
-  post.savedBy = post.savedBy.filter((id) => !id.equals(userObjectId));
+//   post.savedBy = post.savedBy.filter((id) => !id.equals(userObjectId));
 
-  await post.save();
+//   await post.save();
 
-  return { savedPosts: user.savedPosts, savedBy: post.savedBy };
-};
+//   return { savedPosts: user.savedPosts, savedBy: post.savedBy };
+// };
 
-export const getAllSavedPostsQuery = async (userId: string) => {
-  return await dependencies.models.User.findById(userId).populate({
-    path: "savedPosts",
+// export const getAllSavedPostsQuery = async (userId: string) => {
+//   return await dependencies.models.User.findById(userId).populate({
+//     path: "savedPosts",
 
-    select:
-      "caption location postImage totalLikes postedBy likedBy savedBy comments createdAt updatedAt",
+//     select:
+//       "caption location postImage totalLikes postedBy likedBy savedBy comments createdAt updatedAt",
 
-    populate: { path: "postedBy", select: "username profilePicture" },
-  });
-};
+//     populate: { path: "postedBy", select: "username profilePicture" },
+//   });
+// };
 
-export const likePostQuery = async (userId: string, postId: string) => {
-  const post = await dependencies.models.Post.findById(postId);
+// export const likePostQuery = async (userId: string, postId: string) => {
+//   const post = await dependencies.models.Post.findById(postId);
 
-  if (!post) throw new Error("Post not found.");
+//   if (!post) throw new Error("Post not found.");
 
-  const user = await dependencies.models.User.findById(userId);
+//   const user = await dependencies.models.User.findById(userId);
 
-  if (!user) throw new Error("User not found.");
+//   if (!user) throw new Error("User not found.");
 
-  const postObjectId = new mongoose.Types.ObjectId(postId);
+//   const postObjectId = new mongoose.Types.ObjectId(postId);
 
-  const userObjectId = new mongoose.Types.ObjectId(userId);
+//   const userObjectId = new mongoose.Types.ObjectId(userId);
 
-  if (user.likedPosts.includes(postObjectId)) {
-    throw new Error("Post is already liked.");
-  }
+//   if (user.likedPosts.includes(postObjectId)) {
+//     throw new Error("Post is already liked.");
+//   }
 
-  user.likedPosts.push(postObjectId);
+//   user.likedPosts.push(postObjectId);
 
-  await user.save();
+//   await user.save();
 
-  if (!post.likedBy.includes(userObjectId)) {
-    post.likedBy.push(userObjectId);
+//   if (!post.likedBy.includes(userObjectId)) {
+//     post.likedBy.push(userObjectId);
 
-    await post.save();
-  }
+//     await post.save();
+//   }
 
-  return { likedPosts: user.likedPosts, likedBy: post.likedBy };
-};
+//   return { likedPosts: user.likedPosts, likedBy: post.likedBy };
+// };
 
-export const unlikePostQuery = async (userId: string, postId: string) => {
-  const post = await dependencies.models.Post.findById(postId);
+// export const unlikePostQuery = async (userId: string, postId: string) => {
+//   const post = await dependencies.models.Post.findById(postId);
 
-  if (!post) throw new Error("Post not found.");
+//   if (!post) throw new Error("Post not found.");
 
-  const user = await dependencies.models.User.findById(userId);
+//   const user = await dependencies.models.User.findById(userId);
 
-  if (!user) throw new Error("User not found.");
+//   if (!user) throw new Error("User not found.");
 
-  const postObjectId = new mongoose.Types.ObjectId(postId);
+//   const postObjectId = new mongoose.Types.ObjectId(postId);
 
-  const userObjectId = new mongoose.Types.ObjectId(userId);
+//   const userObjectId = new mongoose.Types.ObjectId(userId);
 
-  if (!user.likedPosts.includes(postObjectId)) {
-    throw new Error("Post is not liked.");
-  }
+//   if (!user.likedPosts.includes(postObjectId)) {
+//     throw new Error("Post is not liked.");
+//   }
 
-  user.likedPosts = user.likedPosts.filter((id) => !id.equals(postObjectId));
+//   user.likedPosts = user.likedPosts.filter((id) => !id.equals(postObjectId));
 
-  await user.save();
+//   await user.save();
 
-  post.likedBy = post.likedBy.filter((id) => !id.equals(userObjectId));
+//   post.likedBy = post.likedBy.filter((id) => !id.equals(userObjectId));
 
-  await post.save();
+//   await post.save();
 
-  return { likedPosts: user.likedPosts, likedBy: post.likedBy };
-};
+//   return { likedPosts: user.likedPosts, likedBy: post.likedBy };
+// };
 
-export const getAllLikedPostsQuery = async (userId: string) => {
-  return await dependencies.models.User.findById(userId).populate({
-    path: "likedPosts",
+// export const getAllLikedPostsQuery = async (userId: string) => {
+//   return await dependencies.models.User.findById(userId).populate({
+//     path: "likedPosts",
 
-    select:
-      "caption location postImage totalLikes postedBy likedBy savedBy comments createdAt updatedAt",
+//     select:
+//       "caption location postImage totalLikes postedBy likedBy savedBy comments createdAt updatedAt",
 
-    populate: { path: "postedBy", select: "username profilePicture" },
-  });
-};
+//     populate: { path: "postedBy", select: "username profilePicture" },
+//   });
+// };

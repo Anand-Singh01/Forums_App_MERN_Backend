@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --watch src --exec ts-node src/server/http/httpServer.ts"
+    "dev": "concurrently \"nodemon --watch src --exec ts-node src/server/http/httpServer.ts\" \"nodemon --watch src --exec ts-node src/server/worker/worker.ts\""
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^20.3.1",
     "@types/ws": "^8.5.14",
+    "concurrently": "^9.1.2",
     "nodemon": "^3.1.9",
     "typescript": "^5.1.3"
   },
@@ -27,7 +28,6 @@
     "@types/multer": "^1.4.12",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.5.1",
-    "concurrently": "^8.2.0",
     "cookie": "^1.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

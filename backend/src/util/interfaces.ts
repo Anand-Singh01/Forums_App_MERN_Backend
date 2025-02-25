@@ -9,15 +9,12 @@ export interface IAddPostData {
 }
 
 export interface ISavePostData {
-    postId: string;
+  postId: string;
 }
 
 export interface ILikePostData {
-    postId: string;
+  postId: string;
 }
-
-
-
 
 export interface ServiceResponse<T = unknown> {
   status: boolean;
@@ -72,6 +69,13 @@ export interface IUpdateReply {
   reply: string;
 }
 
+export interface IMessage {
+  senderId: string;
+  receiverId: string;
+  conversationId: string | null | undefined;
+  message: string;
+}
+
 export interface ICommentDto {
   commentId: string;
   comment: string;
@@ -101,8 +105,8 @@ export interface IReplyDto {
   updatedAt: Date;
 }
 
-export interface IPostDto{
-  postId:string;
+export interface IPostDto {
+  postId: string;
   caption: string;
   region: string | null;
   postImage: string;
@@ -110,7 +114,7 @@ export interface IPostDto{
     userId: string;
     userName: string;
     profilePicture: string;
-  }
+  };
   totalLikes: number;
   totalSave: number;
   totalComments: number;
@@ -118,8 +122,8 @@ export interface IPostDto{
   updatedAt: Date;
 }
 
-export interface IFollowerDto{
-  userId:string;
+export interface IFollowerDto {
+  userId: string;
   profilePicture: string;
-  userName:string;
+  userName: string;
 }

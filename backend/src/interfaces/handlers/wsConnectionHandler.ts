@@ -7,9 +7,7 @@ class WsConnectionHandler {
   private constructor() {}
 
   public static async init(ws: WebSocket, userId: string) {
-    ws.on("message", (message: string) => {
-      console.log(message);
-    });
+    ws.on("message", (message: string) => {});
 
     ws.on("close", async (message) => {
       try {

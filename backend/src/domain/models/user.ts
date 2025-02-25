@@ -1,4 +1,5 @@
 import { model, Schema, Types } from "mongoose";
+import { IConversation } from "./conversation";
 import { IPost } from "./post";
 import { IProfile } from "./profile";
 
@@ -11,6 +12,7 @@ export interface IUser {
   userName: string;
   dob: Date;
   writtenPosts: Types.ObjectId[] | IPost[];
+  conversations: Types.ObjectId[] | IConversation[];
   likedPosts: Types.ObjectId[] | IPost[];
   savedPosts: Types.ObjectId[] | IPost[];
   following: Types.ObjectId[] | IUser[];
@@ -27,6 +29,7 @@ const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   userName: { type: String, required: true, unique: true },
+  conversations: [{ type: Schema.Types.ObjectId, ref: "Conversation" }],
   following: [{ type: Schema.Types.ObjectId, ref: "User" }],
   followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   dob: { type: Date, required: true },
