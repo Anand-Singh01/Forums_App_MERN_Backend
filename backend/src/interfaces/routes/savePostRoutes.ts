@@ -23,7 +23,6 @@ savePostRoutes.post("/save-Post", async (req, res) => {
   }
 });
 
-
 savePostRoutes.post("/unsave-Post", async (req, res) => {
   try {
     const { userId }: { userId: string } = res.locals.jwtData;

@@ -69,10 +69,9 @@ export interface IUpdateReply {
   reply: string;
 }
 
-export interface IMessage {
-  senderId: string;
+export interface IMessageRequest {
+  senderId:string;
   receiverId: string;
-  conversationId: string | null | undefined;
   message: string;
 }
 

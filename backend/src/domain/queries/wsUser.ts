@@ -1,5 +1,6 @@
 import { WebSocket } from "ws";
 import RedisClient from "../../infrastructure/database/redis/redisClient";
+import { IMessageRequest } from "../../util/interfaces";
 import {
   getContactMessagesKey,
   getContactStatusKey,
@@ -45,5 +46,17 @@ export const subscribeToReceiveMessages = async (userId: string) => {
       const msg = JSON.parse(message);
       ws.send(JSON.stringify(msg));
     });
+  }
+};
+
+export const publishMessage = async (
+  msg: IMessageRequest
+) => {
+  const { message, receiverId, senderId } = msg;
+  const ws = sockets.get(receiverId);
+  if (ws) {
+    const key = getContactMessagesKey(receiverId);
+    const content = JSON.stringify({ senderId, message });
+    (await RedisClient.getPublisherClient()).publish(key, content);
   }
 };

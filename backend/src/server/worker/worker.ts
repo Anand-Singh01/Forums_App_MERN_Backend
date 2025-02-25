@@ -1,18 +1,22 @@
-import { createClient } from "redis";
+import { RedisClientType } from "redis";
+import { addMessageQuery } from "../../domain/queries/conversation";
+import RedisClient from "../../infrastructure/database/redis/redisClient";
+import { IMessageRequest } from "../../util/interfaces";
 
-const subscriber = createClient({ url: "redis://localhost:6379" });
-const init = async () => {
+let consumerClient: RedisClientType;
+export const startWorker1 = async () => {
   try {
-    await subscriber.connect();
+    if (!consumerClient) {
+      consumerClient = await RedisClient.getConsumerClient();
+    }
     while (true) {
-      const task = await subscriber.brPop("messagingQueue", 0);
+      const task = await consumerClient.brPop("messagingQueue", 0);
       if (task) {
-        console.log("Processing:", JSON.parse(task.element));
+        const message: IMessageRequest = JSON.parse(task.element);
+        await addMessageQuery(message);
       }
     }
   } catch (error) {
     console.error(error);
   }
 };
-
-init();

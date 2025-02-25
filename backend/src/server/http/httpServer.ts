@@ -7,9 +7,12 @@ import dependencies from "../../infrastructure/dependencies";
 import authRoutes from "../../interfaces/routes/authRoutes";
 import commentRoutes from "../../interfaces/routes/commentRoutes";
 import followRoutes from "../../interfaces/routes/followRoutes";
+import likePostRoutes from "../../interfaces/routes/likePostRoutes";
 import postRoutes from "../../interfaces/routes/postRoutes";
 import preferenceRoutes from "../../interfaces/routes/preferenceRoutes";
+import savePostRoutes from "../../interfaces/routes/savePostRoutes";
 import { verifyToken } from "../../util/token";
+import { startWorker1 } from "../worker/worker";
 import { initializeWsServer } from "../ws/wsServer";
 
 const app = express();
@@ -33,19 +36,25 @@ app.use("/api/post", postRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/preference", preferenceRoutes);
 app.use("/api/follow", followRoutes);
-// app.use("/api/save", savePostRoutes);
-// app.use("/api/like", likePostRoutes);
+app.use("/api/save", savePostRoutes);
+app.use("/api/like", likePostRoutes);
 
 const httpServer = createServer(app);
 
-httpServer.listen(PORT, async () => {
-  console.log(`Http server listening on http://localhost:${PORT}`);
-  connectToDatabase()
-    .then(() => {
-      console.log("connected to database 🤝");
-    })
-    .catch((error) => {
-      console.log(error);
+const startServer = async () => {
+  try {
+    await connectToDatabase();
+    console.log("Connected to database.");
+    
+    httpServer.listen(PORT, async () => {
+      console.log(`Http server listening on http://localhost:${PORT}`);
     });
-});
-initializeWsServer(httpServer);
+
+    initializeWsServer(httpServer);
+    await startWorker1();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+startServer();

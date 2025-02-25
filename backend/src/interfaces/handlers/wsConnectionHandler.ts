@@ -1,13 +1,27 @@
+import { RedisClientType } from "redis";
 import { WebSocket } from "ws";
-import { publishOnlineStatus, removeUser } from "../../domain/queries/wsUser";
-import WsStore from "../../domain/wsStore/store";
+import {
+  publishMessage,
+  publishOnlineStatus,
+  removeUser,
+} from "../../domain/queries/wsUser";
+import RedisClient from "../../infrastructure/database/redis/redisClient";
+import { IMessageRequest } from "../../util/interfaces";
 
 class WsConnectionHandler {
-  private static store = WsStore.getInstance();
+  private static client: RedisClientType;
+
   private constructor() {}
 
   public static async init(ws: WebSocket, userId: string) {
-    ws.on("message", (message: string) => {});
+    ws.on("message", async (msg: string) => {
+      if (!this.client) {
+        this.client = await RedisClient.getProducerClient();
+      }
+      const message: IMessageRequest = JSON.parse(msg);
+      await publishMessage(message);
+      await this.client.lPush("messagingQueue", msg);
+    });
 
     ws.on("close", async (message) => {
       try {
