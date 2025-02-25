@@ -49,9 +49,9 @@ authRoutes.get("/logout", verifyToken, async (req: Request, res: Response) => {
 
 authRoutes.get("/get-ws-token", verifyToken, (req: Request, res: Response) => {
   const token = req.signedCookies[dependencies.config.cookie.cookieName!];
-  const decoded : any = jwt.verify(token, dependencies.config.cookie.jwtSecret!);
+  const decoded: any = jwt.verify(token, dependencies.config.cookie.jwtSecret!);
   const wsToken = jwt.sign(
-    {userId:decoded.userId, email:decoded.email},
+    { userId: decoded.userId, email: decoded.email },
     dependencies.config.cookie.jwtSecret!,
     {
       expiresIn: decoded.exp - Math.floor(Date.now() / 1000),

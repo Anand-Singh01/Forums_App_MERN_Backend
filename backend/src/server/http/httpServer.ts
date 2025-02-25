@@ -8,6 +8,7 @@ import authRoutes from "../../interfaces/routes/authRoutes";
 import commentRoutes from "../../interfaces/routes/commentRoutes";
 import followRoutes from "../../interfaces/routes/followRoutes";
 import likePostRoutes from "../../interfaces/routes/likePostRoutes";
+import conversationRoutes from "../../interfaces/routes/messageRoutes";
 import postRoutes from "../../interfaces/routes/postRoutes";
 import preferenceRoutes from "../../interfaces/routes/preferenceRoutes";
 import savePostRoutes from "../../interfaces/routes/savePostRoutes";
@@ -38,6 +39,7 @@ app.use("/api/preference", preferenceRoutes);
 app.use("/api/follow", followRoutes);
 app.use("/api/save", savePostRoutes);
 app.use("/api/like", likePostRoutes);
+app.use("/api/conversation", conversationRoutes);
 
 const httpServer = createServer(app);
 

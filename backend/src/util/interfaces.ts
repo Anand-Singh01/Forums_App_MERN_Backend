@@ -70,7 +70,7 @@ export interface IUpdateReply {
 }
 
 export interface IMessageRequest {
-  senderId:string;
+  senderId: string;
   receiverId: string;
   message: string;
 }
@@ -88,6 +88,26 @@ export interface ICommentDto {
   replyCount: number;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IConversationDto {
+  conversationId: string;
+  participants: [
+    {
+      userId: string;
+      userName: string;
+      profilePicture: string;
+    }
+  ];
+  messages: [
+    {
+      messageId: string;
+      content: string;
+      isEdited: boolean;
+      senderId: string;
+      createdAt: Date;
+    }
+  ];
 }
 
 export interface IReplyDto {

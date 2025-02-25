@@ -13,6 +13,7 @@ export const addPostSchema = z.object({
     .nullable()
     .optional(),
 });
+
 export const updatePostSchema = z.object({
   postId: z.string().refine((val) => ObjectId.isValid(val), {
     message: "Invalid PostId",
@@ -36,11 +37,13 @@ export const updatePostSchema = z.object({
     ),
   // .transform((val) => val.toLowerCase === 'true')
 });
+
 export const deletePostSchema = z.object({
   postId: z.string().refine((val) => ObjectId.isValid(val), {
     message: "Invalid PostId",
   }),
 });
+
 export const getPostByIdSchema = z.object({
   postId: z.string().refine((val) => ObjectId.isValid(val), {
     message: "Invalid PostId",
@@ -103,12 +106,9 @@ export const addReplySchema = z.object({
 });
 
 export const getAllReplySchema = z.object({
-  commentId: z
-    .string()
-    .transform((val) => String(val))
-    .refine((val) => ObjectId.isValid(val), {
-      message: "Invalid commentId",
-    }),
+  commentId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid commentId",
+  }),
 });
 
 export const updateReplySchema = z.object({
@@ -137,5 +137,24 @@ export const deleteReplySchema = z.object({
 export const updateFollowSchema = z.object({
   friendId: z.string().refine((val) => ObjectId.isValid(val), {
     message: "Invalid FriendId",
+  }),
+});
+
+// message
+export const addMessageSchema = z.object({
+  senderId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid SenderId",
+  }),
+  receiverId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid receiverId",
+  }),
+  message: z
+    .string({ required_error: "Message is required" })
+    .min(1, { message: "Message is required." }),
+});
+
+export const getAllMessageSchema = z.object({
+  receiverId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid receiverId",
   }),
 });

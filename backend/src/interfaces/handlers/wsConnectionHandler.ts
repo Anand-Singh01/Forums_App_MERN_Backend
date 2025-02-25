@@ -7,6 +7,7 @@ import {
 } from "../../domain/queries/wsUser";
 import RedisClient from "../../infrastructure/database/redis/redisClient";
 import { IMessageRequest } from "../../util/interfaces";
+import { addMessageValidation } from "../middleware/validation/message";
 
 class WsConnectionHandler {
   private static client: RedisClientType;
@@ -15,12 +16,20 @@ class WsConnectionHandler {
 
   public static async init(ws: WebSocket, userId: string) {
     ws.on("message", async (msg: string) => {
-      if (!this.client) {
-        this.client = await RedisClient.getProducerClient();
+      try {
+        if (!this.client) {
+          this.client = await RedisClient.getProducerClient();
+        }
+        const message: IMessageRequest = JSON.parse(msg);
+        const response = addMessageValidation(message);
+        if (!response.status) {
+          throw new Error(JSON.stringify(response.data));
+        }
+        await publishMessage(message);
+        await this.client.lPush("messagingQueue", msg);
+      } catch (error) {
+        ws.send((error as Error).message || "unexpected error occurred");
       }
-      const message: IMessageRequest = JSON.parse(msg);
-      await publishMessage(message);
-      await this.client.lPush("messagingQueue", msg);
     });
 
     ws.on("close", async (message) => {

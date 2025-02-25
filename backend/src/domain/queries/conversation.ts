@@ -1,11 +1,11 @@
 import { Types } from "mongoose";
-import { IMessageRequest } from "../../util/interfaces";
+import { IFollowerDto, IMessageRequest } from "../../util/interfaces";
 import { Conversation } from "../models/conversation";
 import { Message } from "../models/message";
-import { User } from "../models/user";
+import { IProfile } from "../models/profile";
+import { IUser, User } from "../models/user";
 
 export const addMessageQuery = async (data: IMessageRequest) => {
-  
   const { message, receiverId, senderId } = data;
 
   const sender = await User.findById(senderId);
@@ -33,7 +33,56 @@ export const addMessageQuery = async (data: IMessageRequest) => {
       messages: [msg._id],
     });
   }
-
   await conversation.save();
-  console.log("Saved...");
+};
+
+export const getAllConversationQuery = async (
+  senderId: string,
+  receiverId: string
+) => {
+  const conversation = await Conversation.findOne({
+    participants: { $all: [senderId, receiverId] },
+  })
+    .populate({
+      path: "messages",
+      select: "content isEdited sender createdAt",
+    })
+    .populate({
+      path: "participants",
+      select: "userName _id",
+      populate: {
+        path: "profile",
+        select: "profilePicture",
+      },
+    })
+    .sort({ createdAt: 1 });
+  return conversation;
+};
+
+export const getChatPartnersQuery = async (senderId: string) => {
+  const conversations = await Conversation.find({
+    participants: { $in: [senderId] },
+  }).populate({
+    path: "participants",
+    select: "userName _id",
+    populate: {
+      path: "profile",
+      select: "profilePicture",
+    },
+  });
+
+  const chatPartners = conversations.flatMap((conv) =>
+    conv.participants.filter((user) => user._id.toString() !== senderId)
+  );
+
+  let res: IFollowerDto[] = [];
+  (chatPartners as IUser[]).forEach(({ _id, profile, userName }) => {
+    res.push({
+      userId: _id.toString(),
+      profilePicture: (profile as IProfile).profilePicture,
+      userName,
+    });
+  });
+
+  return res;
 };
