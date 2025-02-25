@@ -1,5 +1,6 @@
 import dependencies from "../../infrastructure/dependencies";
 import { IUpdatePostData } from "../../util/interfaces";
+import mongoose, { Types } from "mongoose";
 // Saves image on cloud and returns the url.
 export const saveImageOnCloud = async (fileContent: string) => {
   const myCloud = await dependencies.cloud.v2.uploader.upload(fileContent);
@@ -122,16 +123,16 @@ export const savePostQuery = async (userId: string, postId: string) => {
 
   const userObjectId = new mongoose.Types.ObjectId(userId);
 
-  if (user.savedPosts.includes(postObjectId)) {
+  if ((user.savedPosts as Types.ObjectId[]).includes(postObjectId)) {
     throw new Error("Post is already saved.");
   }
 
-  user.savedPosts.push(postObjectId);
+  (user.savedPosts as Types.ObjectId[]).push(postObjectId);
 
   await user.save();
 
-  if (!post.savedBy.includes(userObjectId)) {
-    post.savedBy.push(userObjectId);
+  if (!(post.savedBy as Types.ObjectId[]).includes(userObjectId)) {
+    (post.savedBy as Types.ObjectId[]).push(userObjectId);
 
     await post.save();
   }
@@ -152,15 +153,15 @@ export const unsavePostQuery = async (userId: string, postId: string) => {
 
   const userObjectId = new mongoose.Types.ObjectId(userId);
 
-  if (!user.savedPosts.includes(postObjectId)) {
+  if (!(user.savedPosts as Types.ObjectId[]).includes(postObjectId)) {
     throw new Error("Post is not saved.");
   }
 
-  user.savedPosts = user.savedPosts.filter((id) => !id.equals(postObjectId));
+  user.savedPosts = (user.savedPosts as Types.ObjectId[]).filter((id) => !id.equals(postObjectId));
 
   await user.save();
 
-  post.savedBy = post.savedBy.filter((id) => !id.equals(userObjectId));
+  post.savedBy = (post.savedBy as Types.ObjectId[]).filter((id) => !id.equals(userObjectId));
 
   await post.save();
 
@@ -191,16 +192,16 @@ export const likePostQuery = async (userId: string, postId: string) => {
 
   const userObjectId = new mongoose.Types.ObjectId(userId);
 
-  if (user.likedPosts.includes(postObjectId)) {
+  if ((user.likedPosts as Types.ObjectId[]).includes(postObjectId)) {
     throw new Error("Post is already liked.");
   }
 
-  user.likedPosts.push(postObjectId);
+  (user.likedPosts as Types.ObjectId[]).push(postObjectId);
 
   await user.save();
 
-  if (!post.likedBy.includes(userObjectId)) {
-    post.likedBy.push(userObjectId);
+  if (!(post.likedBy as Types.ObjectId[]).includes(userObjectId)) {
+    (post.likedBy as Types.ObjectId[]).push(userObjectId);
 
     await post.save();
   }
@@ -221,15 +222,15 @@ export const unlikePostQuery = async (userId: string, postId: string) => {
 
   const userObjectId = new mongoose.Types.ObjectId(userId);
 
-  if (!user.likedPosts.includes(postObjectId)) {
+  if (!(user.likedPosts as Types.ObjectId[]) .includes(postObjectId)) {
     throw new Error("Post is not liked.");
   }
 
-  user.likedPosts = user.likedPosts.filter((id) => !id.equals(postObjectId));
+  user.likedPosts = (user.likedPosts as Types.ObjectId[]).filter((id) => !id.equals(postObjectId));
 
   await user.save();
 
-  post.likedBy = post.likedBy.filter((id) => !id.equals(userObjectId));
+  post.likedBy = (post.likedBy as Types.ObjectId[]).filter((id) => !id.equals(userObjectId));
 
   await post.save();
 
