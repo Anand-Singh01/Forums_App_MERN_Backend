@@ -1,3 +1,4 @@
+import exp from "constants";
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
@@ -156,5 +157,51 @@ export const addMessageSchema = z.object({
 export const getAllMessageSchema = z.object({
   receiverId: z.string().refine((val) => ObjectId.isValid(val), {
     message: "Invalid receiverId",
+  }),
+});
+
+
+// Save
+export const savePostSchema = z.object({
+  postId: z
+  .string()
+  .refine((val) => ObjectId.isValid(val), {
+    message: "Invalid PostId",
+  }),
+});
+
+export const unsavePostSchema = z.object({
+  postId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid PostId",
+  }),
+});
+
+export const getAllSavedPostSchema = z.object({
+  userId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid userId",
+  }),
+});
+
+
+
+
+// Like
+export const likePostSchema = z.object({
+  postId: z
+  .string()
+  .refine((val) => ObjectId.isValid(val), {
+    message: "Invalid PostId",
+  }),
+});
+
+export const unlikePostSchema = z.object({
+  postId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid PostId",
+  }),
+});
+
+export const getAllLikedPostSchema = z.object({
+  userId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid userId",
   }),
 });
