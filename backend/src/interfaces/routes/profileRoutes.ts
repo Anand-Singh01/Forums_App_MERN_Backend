@@ -1,0 +1,103 @@
+import { Request, Response, Router } from "express";
+import {
+  createDefaultProfile,
+  getProfile,
+  updateProfile,
+  deleteProfile,
+} from "../../infrastructure/respositories/profileRepository";
+import { serverError } from "../../util/helper";
+import { IUpdateProfileData, ServiceResponse } from "../../util/interfaces";
+import { verifyToken } from "../../util/token";
+import getDataUri from "../middleware/cloud/dataUri";
+import singleUpload from "../middleware/cloud/multer";
+
+const profileRoutes = Router();
+
+profileRoutes.use(verifyToken);
+
+profileRoutes.post(
+  "/create-profile",
+  async (req: Request, res: Response) => {
+    try {
+      const { userId }: { userId: string } = res.locals.jwtData;
+      const { userName } = req.body;
+
+      const response: ServiceResponse = await createDefaultProfile(userId, userName);
+
+      res.status(response.statusCode).json({
+        msg: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      return serverError(res, error);
+    }
+  }
+);
+
+profileRoutes.get(
+  "/get-profile",
+  async (req: Request, res: Response) => {
+    try {
+      const { userId }: { userId: string } = res.locals.jwtData;
+
+      const response: ServiceResponse = await getProfile(userId);
+
+      res.status(response.statusCode).json({
+        msg: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      return serverError(res, error);
+    }
+  }
+);
+
+profileRoutes.put(
+  "/update-profile",
+  singleUpload,
+  async (req: Request, res: Response) => {
+    try {
+      const { userId }: { userId: string } = res.locals.jwtData;
+      const { name, description, isImageUpdated }: IUpdateProfileData = req.body;
+      const file: Express.Multer.File | undefined = req.file;
+
+      let fileContent: string | undefined;
+      if (isImageUpdated && file) {
+        fileContent = getDataUri(file).content;
+      }
+
+      const response: ServiceResponse = await updateProfile(userId, {
+        name,
+        description,
+        isImageUpdated,
+      }, fileContent);
+
+      res.status(response.statusCode).json({
+        msg: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      return serverError(res, error);
+    }
+  }
+);
+
+profileRoutes.delete(
+  "/delete-profile",
+  async (req: Request, res: Response) => {
+    try {
+      const { userId }: { userId: string } = res.locals.jwtData;
+
+      const response: ServiceResponse = await deleteProfile(userId);
+
+      res.status(response.statusCode).json({
+        msg: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      return serverError(res, error);
+    }
+  }
+);
+
+export default profileRoutes;

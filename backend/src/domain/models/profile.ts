@@ -12,7 +12,11 @@ export interface IProfile {
 // Profile Schema
 const profileSchema = new Schema<IProfile>({
   profileName: { type: String, required: true, default: "Profile Name" },
-  profilePicture: { type: String, required: false },
+  profilePicture: {
+    type: String,
+    required: false,
+    default: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png", // Generic User Icon
+  },
   profileDescription: { type: String, required: false },
   user: { type: Schema.Types.ObjectId, ref: "User" },
 });
