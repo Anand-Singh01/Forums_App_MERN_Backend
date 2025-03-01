@@ -8,7 +8,7 @@ export const createDefaultProfile = async (
   let response: ServiceResponse = {
     message: "Default profile created successfully",
     status: true,
-    statusCode: 201,
+    statusCode: 200,
     data: null,
   };
 

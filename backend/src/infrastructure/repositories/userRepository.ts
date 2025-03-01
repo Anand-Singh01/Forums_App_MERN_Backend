@@ -10,19 +10,27 @@ import { User } from "../../domain/models/user";
 import {createToken, setTokenAndCookie} from "../../util/token";
 import { ILoginUser, IRegisterUser, ServiceResponse } from "../../util/interfaces";
 import { Response } from "express";
+import { createDefaultProfile } from "./profileRepository";
 import dependencies from "../dependencies";
 
+
+
 export const registerUser = async (data: IRegisterUser, res:Response): Promise<ServiceResponse> => {
-  let response: ServiceResponse = { status: true, statusCode: 200, message: "User created", data: null };
+  let response: ServiceResponse = { 
+    message: "User created", 
+    status: true, 
+    statusCode: 200, 
+    data: null };
 
   try {
     const existingUser = await User.findOne({ email:data.email });
     const {dob, email, firstName, lastName, password, userName} = data;
+    
     if (existingUser) {
       response.statusCode = 401;
       throw new Error("User already exists");
     }
-
+    
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -36,6 +44,12 @@ export const registerUser = async (data: IRegisterUser, res:Response): Promise<S
     });
 
     const savedUser = await newUser.save();
+
+    const profileResponse = await createDefaultProfile(savedUser._id.toString(), data.userName);
+    if (!profileResponse.status) {
+      throw new Error("Error creating profile");
+    }
+    
     setTokenAndCookie(res, {email, userId: savedUser._id.toString()}, "7d");
     response.data = { _id: savedUser._id, email: savedUser.email };
   } catch (error) {
