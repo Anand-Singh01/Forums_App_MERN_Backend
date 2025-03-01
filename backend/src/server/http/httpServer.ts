@@ -12,6 +12,7 @@ import conversationRoutes from "../../interfaces/routes/messageRoutes";
 import postRoutes from "../../interfaces/routes/postRoutes";
 import profileRoutes from "../../interfaces/routes/profileRoutes";
 import savePostRoutes from "../../interfaces/routes/savePostRoutes";
+import searchRoutes from "../../interfaces/routes/searchRoutes";
 import { verifyToken } from "../../util/token";
 import { startWorker1 } from "../worker/worker";
 import { initializeWsServer } from "../ws/wsServer";
@@ -40,6 +41,7 @@ app.use("/api/follow", followRoutes);
 app.use("/api/save", savePostRoutes);
 app.use("/api/like", likePostRoutes);
 app.use("/api/conversation", conversationRoutes);
+app.use("/api/search", searchRoutes);
 
 const httpServer = createServer(app);
 

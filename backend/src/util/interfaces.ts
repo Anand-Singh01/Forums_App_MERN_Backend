@@ -146,3 +146,10 @@ export interface IFollowerDto {
   profilePicture: string;
   userName: string;
 }
+
+
+export interface ISearchUserData {
+  userId: string;
+  profilePicture: string | null;
+  userName: string;
+}
