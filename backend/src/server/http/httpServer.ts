@@ -10,8 +10,10 @@ import followRoutes from "../../interfaces/routes/followRoutes";
 import likePostRoutes from "../../interfaces/routes/likePostRoutes";
 import conversationRoutes from "../../interfaces/routes/messageRoutes";
 import postRoutes from "../../interfaces/routes/postRoutes";
-import preferenceRoutes from "../../interfaces/routes/preferenceRoutes";
 import savePostRoutes from "../../interfaces/routes/savePostRoutes";
+import profileRoutes from "../../interfaces/routes/profileRoutes";
+import feedbackRoutes from "../../interfaces/routes/feedbackRoutes";
+
 import { verifyToken } from "../../util/token";
 import { startWorker1 } from "../worker/worker";
 import { initializeWsServer } from "../ws/wsServer";
@@ -35,10 +37,12 @@ app.use("/api/auth", authRoutes);
 app.use(verifyToken);
 app.use("/api/post", postRoutes);
 app.use("/api/comment", commentRoutes);
-app.use("/api/preference", preferenceRoutes);
+app.use("/api/Profile", profileRoutes);
 app.use("/api/follow", followRoutes);
 app.use("/api/save", savePostRoutes);
 app.use("/api/like", likePostRoutes);
+app.use("/api/feedback", feedbackRoutes); 
+
 app.use("/api/conversation", conversationRoutes);
 
 const httpServer = createServer(app);
