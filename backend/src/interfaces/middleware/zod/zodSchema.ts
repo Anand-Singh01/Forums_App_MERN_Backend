@@ -205,3 +205,42 @@ export const getAllLikedPostSchema = z.object({
     message: "Invalid userId",
   }),
 });
+
+//Create Profile Scheme 
+export const createProfileSchema = z.object({
+  profileName: z.string({ required_error: "Profile name is required" }),
+  profileDescription: z.string().optional(),
+  user: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid User ID",
+  }),
+});
+
+//Update Profile Scheme 
+
+export const updateProfileSchema = z.object({
+  name: z.string({ required_error: "Name is required" }),
+  description: z.string().optional(),
+  isImageUpdated: z
+    .string()
+    .refine(
+      (val) => val.toLowerCase() === "true" || val.toLowerCase() === "false",
+      {
+        message: "Invalid isImageUpdated value.",
+      }
+    ),
+});
+
+//Delete Profile Scheme 
+
+export const deleteProfileSchema = z.object({
+  userId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid User ID",
+  }),
+});
+
+//Get Profile Scheme 
+export const getProfileByIdSchema = z.object({
+  userId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid User ID",
+  }),
+});
