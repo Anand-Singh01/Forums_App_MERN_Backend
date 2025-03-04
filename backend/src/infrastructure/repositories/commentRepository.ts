@@ -9,6 +9,7 @@ import {
   updateCommentQuery,
   updateReplyQuery,
 } from "../../domain/queries/comment";
+import { Comment } from "../../domain/models/comment";
 import {
   ICreateComment,
   ICreateReply,
@@ -183,6 +184,44 @@ export const deleteReply = async (replyId: string) => {
     const res = await deleteReplyQuery(replyId);
     response.data = res;
     response.message = "reply deleted successfully";
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "unexpected error occurred";
+    if (!response.statusCode || response.statusCode === 200) {
+      response.statusCode = 500;
+    }
+    response.data = null;
+  }
+  return response;
+};
+
+
+export const likeComment = async (commentId: string, userId: string) => {
+  let response: ServiceResponse = {
+    message: "success",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      throw new Error("Comment not found.");
+    }
+
+    if ((comment.likedBy as Types.ObjectId[]).includes(new Types.ObjectId(userId))) {
+      comment.likes -= 1;
+      comment.likedBy = (comment.likedBy as Types.ObjectId[]).filter((id: Types.ObjectId) => id.toString() !== userId);
+      response.message = "Comment unliked successfully.";
+    } else {
+      comment.likes += 1;
+      comment.likedBy.push(userId);
+      response.message = "Comment liked successfully.";
+    }
+
+    await comment.save();
+    response.data = {likes: comment.likes, likedBy: comment.likedBy};
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";

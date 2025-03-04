@@ -10,6 +10,8 @@ export interface IComment extends Document {
   commentedPost: Types.ObjectId | IPost;
   commentedBy: Types.ObjectId | IUser;
   reply: Types.ObjectId[] | IReply[];
+  likedBy: Types.ObjectId[] | IUser[];
+  likes: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +23,8 @@ const commentSchema = new Schema<IComment>({
   commentedPost: { type: Schema.Types.ObjectId, ref: "Post" },
   commentedBy: { type: Schema.Types.ObjectId, ref: "User" },
   reply: [ { type: Schema.Types.ObjectId, ref: "Reply" }],
+  likedBy: [ { type: Schema.Types.ObjectId, ref: "User" }],
+  likes: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

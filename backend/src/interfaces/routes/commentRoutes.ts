@@ -8,6 +8,7 @@ import {
   getAllReply,
   updateComment,
   updateReply,
+  likeComment
 } from "../../infrastructure/repositories/commentRepository";
 import { serverError } from "../../util/helper";
 import {
@@ -166,5 +167,17 @@ commentRoutes.delete(
     }
   }
 );
+
+
+commentRoutes.put("/like-comment", async (req: Request, res: Response) => {
+  try {
+    const {userId} = res.locals.jwtData;
+    const {commentId} = req.body;
+    const response = await likeComment(commentId, userId);
+    res.status(response.statusCode).json({msg: response.message, data: response.data});
+  }catch (error) {
+    return serverError(res, error);
+  }
+});
 
 export default commentRoutes;
