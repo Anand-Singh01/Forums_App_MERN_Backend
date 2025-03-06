@@ -69,11 +69,6 @@ export const updatePostValidation = (
       response.data = validation.error.flatten().fieldErrors;
       throw new Error("Validation failed");
     }
-
-    if (!file && data.isImageUpdated) {
-      response.statusCode = 400;
-      throw new Error("Post Image is required.");
-    }
     next();
   } catch (error) {
     response.status = false;

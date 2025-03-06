@@ -91,13 +91,14 @@ postRoutes.put(
   updatePostValidation,
   async (req: Request, res: Response) => {
     try {
+      const { userId }: { userId: string } = res.locals.jwtData;
       const data: IUpdatePostData = req.body;
       const file: Express.Multer.File | undefined = req.file;
       let fileContent: string | undefined = undefined;
       if (data.isImageUpdated.toLocaleLowerCase() === "true" && file) {
         fileContent = getDataUri(file).content;
       }
-      const response: ServiceResponse = await updatePost(data, fileContent);
+      const response: ServiceResponse = await updatePost(userId, data, fileContent);
       res
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });
@@ -113,8 +114,9 @@ postRoutes.delete(
   deletePostValidation,
   async (req: Request, res: Response) => {
     try {
+      const { userId }: { userId: string } = res.locals.jwtData;
       const { postId } = req.params;
-      const response: ServiceResponse = await deletePost(postId);
+      const response: ServiceResponse = await deletePost(userId, postId);
       res
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });

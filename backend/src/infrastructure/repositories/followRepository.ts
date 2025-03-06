@@ -1,12 +1,16 @@
 import { followerDto } from "../../domain/dto/followersDto";
 import { IUser } from "../../domain/models/user";
 import {
-    getFollowersListQuery,
-    getFollowingListQuery,
-    updateFollowQuery,
+  followQuery,
+  getFollowersListQuery,
+  getFollowingListQuery,
+  isFollowing,
+  unFollowQuery,
 } from "../../domain/queries/follow";
+import { getUserById } from "../../domain/queries/user";
 import { IFollowerDto, ServiceResponse } from "../../util/interfaces";
 
+// follow / unFollow user
 export const updateFollow = async (userId: string, friendId: string) => {
   let response: ServiceResponse = {
     message: "success",
@@ -16,8 +20,24 @@ export const updateFollow = async (userId: string, friendId: string) => {
   };
 
   try {
-    const res = await updateFollowQuery(userId, friendId);
-    response.data = res;
+    if(userId === friendId){
+      throw new Error("Invalid action: You cannot follow your own account.");
+    }
+    const user = await getUserById(userId);
+    const friend = await getUserById(friendId);
+    if (!user) {
+      throw new Error("Invalid userId");
+    } else if (!friend) {
+      throw new Error("Invalid friendId");
+    }
+    const isFollow = isFollowing(user, friend._id);
+    if (isFollow) {
+      await unFollowQuery(user, friend);
+      response.data = { message: "unfollowed" };
+    } else {
+      await followQuery(user, friend);
+      response.data = { message: "followed" };
+    }
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
@@ -29,6 +49,7 @@ export const updateFollow = async (userId: string, friendId: string) => {
   return response;
 };
 
+// get followers list
 export const followersList = async (userId: string) => {
   let response: ServiceResponse = {
     message: "success",
@@ -38,7 +59,10 @@ export const followersList = async (userId: string) => {
   };
 
   try {
-    const followers = (await getFollowersListQuery(userId)) as IUser[];
+    const followers = (await getFollowersListQuery(userId)) as IUser[] | null;
+    if (!followers) {
+      throw new Error("User not found.");
+    }
     let modifiedFollowers = [] as IFollowerDto[];
     followers.forEach((user) => {
       modifiedFollowers.push(followerDto(user));
@@ -55,6 +79,7 @@ export const followersList = async (userId: string) => {
   return response;
 };
 
+// get following list
 export const followingList = async (userId: string) => {
   let response: ServiceResponse = {
     message: "success",
@@ -64,12 +89,15 @@ export const followingList = async (userId: string) => {
   };
 
   try {
-    const followers = (await getFollowingListQuery(userId)) as IUser[];
-    let modifiedFollowers = [] as IFollowerDto[];
-    followers.forEach((user) => {
-      modifiedFollowers.push(followerDto(user));
+    const following = (await getFollowingListQuery(userId)) as IUser[] | null;
+    if (!following) {
+      throw new Error("User not found.");
+    }
+    let modifiedFollowing = [] as IFollowerDto[];
+    following.forEach((user) => {
+      modifiedFollowing.push(followerDto(user));
     });
-    response.data = modifiedFollowers;
+    response.data = modifiedFollowing;
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";

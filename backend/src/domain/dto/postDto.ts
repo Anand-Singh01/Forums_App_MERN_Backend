@@ -12,7 +12,6 @@ export const postDto = (post: IPost) => {
     region: post.region,
     postImage: post.postImage,
     postedBy: {
-      profilePicture: profile.profilePicture,
       userId: user._id.toString(),
       userName: user.userName,
     },

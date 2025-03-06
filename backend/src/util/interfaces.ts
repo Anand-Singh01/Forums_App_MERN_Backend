@@ -17,17 +17,10 @@ export interface ILikePostData {
 }
 
 export interface ServiceResponse<T = unknown> {
-<<<<<<< HEAD
   status: boolean;
   statusCode: 401 | 500 | 400 | 200 | 404;
   message: string | null;
   data: T | null;
-=======
-    status: boolean;
-    statusCode: 201| 401 | 500 | 400 | 200 | 404;
-    message: string | null;
-    data: T | null;
->>>>>>> Feature/TM-86
 }
 
 export interface IRegisterUser {
@@ -139,7 +132,6 @@ export interface IPostDto {
   postedBy: {
     userId: string;
     userName: string;
-    profilePicture: string;
   };
   totalLikes: number;
   totalSave: number;
@@ -151,5 +143,12 @@ export interface IPostDto {
 export interface IFollowerDto {
   userId: string;
   profilePicture: string;
+  userName: string;
+}
+
+
+export interface ISearchUserData {
+  userId: string;
+  profilePicture: string | null;
   userName: string;
 }

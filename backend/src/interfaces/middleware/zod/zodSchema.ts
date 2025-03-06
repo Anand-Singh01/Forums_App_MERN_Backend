@@ -1,4 +1,3 @@
-import exp from "constants";
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
@@ -34,9 +33,7 @@ export const updatePostSchema = z.object({
       (val) => val.toLowerCase() === "true" || val.toLowerCase() === "false",
       {
         message: "Invalid isImageUpdated value.",
-      }
-    ),
-  // .transform((val) => val.toLowerCase === 'true')
+      })
 });
 
 export const deletePostSchema = z.object({

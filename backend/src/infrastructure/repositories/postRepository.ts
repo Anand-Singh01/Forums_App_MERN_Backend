@@ -14,6 +14,7 @@ import {
   IUpdatePostData,
   ServiceResponse,
 } from "../../util/interfaces";
+import { populateMultiplePost, populatePost } from "../database/mongo/populate";
 
 export const addPost = async (
   userId: string,
@@ -38,6 +39,7 @@ export const addPost = async (
       throw new Error("image is required.");
     }
     const savedPost = await addPostQuery(caption, region, postImage, userId);
+    populatePost(savedPost);
     response.data = postDto(savedPost);
   } catch (error) {
     response.status = false;
@@ -64,6 +66,7 @@ export const getPostById = async (postId: string) => {
       response.statusCode = 404;
       throw new Error("post not found.");
     }
+    await populatePost(post);
     response.data = postDto(post);
   } catch (error) {
     response.status = false;
@@ -86,6 +89,7 @@ export const getAllPosts = async () => {
 
   try {
     const post = await getAllPostsQuery();
+    await populateMultiplePost(post);
     let modifiedPosts: IPostDto[] = [];
     post.forEach((p) => {
       modifiedPosts.push(postDto(p));
@@ -103,6 +107,7 @@ export const getAllPosts = async () => {
 };
 
 export const updatePost = async (
+  userId:string,
   data: IUpdatePostData,
   fileContent: string | undefined
 ) => {
@@ -114,8 +119,16 @@ export const updatePost = async (
   };
 
   try {
-    const post = await updatePostQuery(data, fileContent);
-    response.data = postDto(post);
+    const post = await getPostByIdQuery(data.postId);
+    if (!post) {
+      throw new Error("post not found.");
+    }
+    if(post.postedBy.toString() !== userId){
+      throw new Error("unauthorized to update post.");
+    }
+    const updatedPost = await updatePostQuery(post, data, fileContent);
+    await populatePost(updatedPost);
+    response.data = postDto(updatedPost);
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
@@ -127,7 +140,7 @@ export const updatePost = async (
   return response;
 };
 
-export const deletePost = async (postId: string) => {
+export const deletePost = async (userId:string, postId: string) => {
   let response: ServiceResponse = {
     message: "success",
     status: true,
@@ -136,6 +149,13 @@ export const deletePost = async (postId: string) => {
   };
 
   try {
+    const post = await getPostByIdQuery(postId);
+    if(!post){
+      throw new Error("post not found.");
+    }
+    if(post.postedBy.toString() !== userId){
+      throw new Error("unauthorized to delete post.");
+    }
     const deletedPost = await deletePostQuery(postId);
     if (!deletedPost) {
       response.statusCode = 404;
@@ -164,6 +184,7 @@ export const getMyPosts = async (userId: string) => {
 
   try {
     const posts = await getPostsByUserIdQuery(userId);
+    await populateMultiplePost(posts);
     let modifiedPosts: IPostDto[] = [];
     posts.forEach((p) => {
       modifiedPosts.push(postDto(p));

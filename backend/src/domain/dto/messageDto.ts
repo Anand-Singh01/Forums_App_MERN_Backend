@@ -1,7 +1,6 @@
 import { IConversationDto } from "../../util/interfaces";
 import { IConversation } from "../models/conversation";
 import { IMessage } from "../models/message";
-import { IProfile } from "../models/profile";
 import { IUser } from "../models/user";
 
 export const messageDto = (conversation: IConversation) => {
@@ -12,7 +11,7 @@ export const messageDto = (conversation: IConversation) => {
       return {
         userId: _id.toString(),
         userName,
-        profilePicture: (profile as IProfile).profilePicture,
+        // profilePicture: (profile as IProfile).profilePicture,
       };
     }
   );

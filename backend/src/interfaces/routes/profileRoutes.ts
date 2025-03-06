@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-
 import { serverError } from "../../util/helper";
 import { IUpdateProfileData, ServiceResponse } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
@@ -100,3 +99,10 @@ profileRoutes.delete(
 );
 
 export default profileRoutes;
+
+
+
+
+//Implement search for users by their unique username. This is to allow 
+// users to find each other. just the back end is what I need. and follow 
+// formating we used for saving, and liking, with

@@ -10,10 +10,10 @@ import followRoutes from "../../interfaces/routes/followRoutes";
 import likePostRoutes from "../../interfaces/routes/likePostRoutes";
 import conversationRoutes from "../../interfaces/routes/messageRoutes";
 import postRoutes from "../../interfaces/routes/postRoutes";
-import savePostRoutes from "../../interfaces/routes/savePostRoutes";
-import profileRoutes from "../../interfaces/routes/profileRoutes";
 import feedbackRoutes from "../../interfaces/routes/feedbackRoutes";
-
+import profileRoutes from "../../interfaces/routes/profileRoutes";
+import savePostRoutes from "../../interfaces/routes/savePostRoutes";
+import searchRoutes from "../../interfaces/routes/searchRoutes";
 import { verifyToken } from "../../util/token";
 import { startWorker1 } from "../worker/worker";
 import { initializeWsServer } from "../ws/wsServer";
@@ -37,13 +37,14 @@ app.use("/api/auth", authRoutes);
 app.use(verifyToken);
 app.use("/api/post", postRoutes);
 app.use("/api/comment", commentRoutes);
-app.use("/api/Profile", profileRoutes);
+app.use("/api/profile", profileRoutes);
 app.use("/api/follow", followRoutes);
 app.use("/api/save", savePostRoutes);
 app.use("/api/like", likePostRoutes);
 app.use("/api/feedback", feedbackRoutes); 
 
 app.use("/api/conversation", conversationRoutes);
+app.use("/api/search", searchRoutes);
 
 const httpServer = createServer(app);
 
@@ -51,7 +52,7 @@ const startServer = async () => {
   try {
     await connectToDatabase();
     console.log("Connected to database.");
-    
+
     httpServer.listen(PORT, async () => {
       console.log(`Http server listening on http://localhost:${PORT}`);
     });
