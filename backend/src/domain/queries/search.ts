@@ -15,7 +15,7 @@ export const searchUsers = async (userName: string) => {
     return users.map(user => ({
         userId: user._id,
         userName: user.userName,
-        // Auto fill code, gotta check it. works!
+        
         profile: typeof user.profile === 'object' && 'profilePicture' in user.profile ? user.profile.profilePicture : null, 
     }));
     }catch(error){

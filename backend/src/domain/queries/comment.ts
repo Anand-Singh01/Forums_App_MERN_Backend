@@ -173,3 +173,27 @@ export const deleteReplyQuery = async (replyId: string) => {
   await reply.deleteOne({ _id: replyId });
   return {replyId}
 };
+
+export const updateLikeStatusQuery = async (commentId: string, userId: string) => {
+  // find comment by id
+  const comment = await Comment.findById(commentId);
+  // exists?
+  if (!comment) {
+    throw new Error("Comment not found.");
+  }
+
+  let liked = false; 
+
+  // Already liked by user?
+  if ((comment.likedBy as Types.ObjectId[]).includes(new Types.ObjectId(userId))) {
+    // if alreadt liked, unlike it
+    comment.likedBy = (comment.likedBy as Types.ObjectId[]).filter((id: Types.ObjectId) => id.toString() !== userId);
+  } else {
+    // if not liked, like it
+    (comment.likedBy as Types.ObjectId[]).push(new Types.ObjectId(userId));
+    liked = true; // LIKED!
+  }
+  
+  await comment.save();
+  return { liked, likedBy: comment.likedBy };
+};

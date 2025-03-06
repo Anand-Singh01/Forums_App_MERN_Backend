@@ -14,11 +14,8 @@ const authRoutes = express.Router();
 
 authRoutes.post("/register", async (req: Request, res: Response) => {
   try {
-    const data: IRegisterUser = req.body;
-    const response = await registerUser(data, res);
-    res
-      .status(response.statusCode)
-      .json({ message: response.message, data: response.data });
+    const response = await registerUser(req.body, res);
+    res.status(response.statusCode).json({ message: response.message, data: response.data });
   } catch (error) {
     serverError(res, error);
   }
@@ -26,11 +23,8 @@ authRoutes.post("/register", async (req: Request, res: Response) => {
 
 authRoutes.post("/login", async (req: Request, res: Response) => {
   try {
-    const data: ILoginUser = req.body;
-    const response = await loginUser(data, res);
-    res
-      .status(response.statusCode)
-      .json({ message: response.message, data: response.data });
+    const response = await loginUser(req.body, res);
+    res.status(response.statusCode).json({ message: response.message, data: response.data });
   } catch (error) {
     serverError(res, error);
   }

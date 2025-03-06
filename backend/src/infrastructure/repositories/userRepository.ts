@@ -12,6 +12,7 @@ import { searchUsers } from "../../domain/queries/search";
 import { Response } from "express";
 import { createDefaultProfile } from "./profileRepository";
 import dependencies from "../dependencies";
+import { createUser, findUserByEmail } from "../../domain/queries/wsUser";
 
 
 // Searching for users by username. I put it here, didnt think it needed a whole new file
@@ -28,34 +29,25 @@ export const registerUser = async (data: IRegisterUser, res:Response): Promise<S
     data: null };
 
   try {
-    const existingUser = await User.findOne({ email:data.email });
-    const {dob, email, firstName, lastName, password, userName} = data;
+    // exists?
+    const existingUser = await findUserByEmail(data.email );
     
+
     if (existingUser) {
       response.statusCode = 401;
       throw new Error("User already exists");
     }
     
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({
-      userName,
-      password: hashedPassword,
-      firstName,
-      lastName,
-      email,
-      dob,
-    });
+    const savedUser = await createUser(data);
 
-    const savedUser = await newUser.save();
-
+    // abdis default profile function
     const profileResponse = await createDefaultProfile(savedUser._id.toString(), data.userName);
     if (!profileResponse.status) {
       throw new Error("Error creating profile");
     }
     
-    setTokenAndCookie(res, {email, userId: savedUser._id.toString()}, "7d");
+    setTokenAndCookie(res, {email: savedUser.email, userId: savedUser._id.toString()}, "7d");
     response.data = { _id: savedUser._id, email: savedUser.email };
   } catch (error) {
     response.status = false;
@@ -68,27 +60,29 @@ export const registerUser = async (data: IRegisterUser, res:Response): Promise<S
 };
 
 export const loginUser = async (data: ILoginUser, res: Response): Promise<ServiceResponse> => {
-  let response: ServiceResponse = { status: true, statusCode: 200, message: "Login successful", data: null };
+  let response: 
+  ServiceResponse = 
+  { status: true, 
+    statusCode: 200, 
+    message: "Login successful", 
+    data: null };
 
   try {
-    const { email, password } = data;
-
-    const user = await User.findOne({ email });
+    const user = await findUserByEmail(data.email);
 
     if (!user) {
       response.statusCode = 401;
       throw new Error("User not found");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
+    const isPasswordValid = await bcrypt.compare(data.password, user.password);
     if (!isPasswordValid) {
       response.statusCode = 401;
       throw new Error("Invalid credentials");
     }
 
     // Generate token and set cookie
-    setTokenAndCookie(res, { userId: user._id.toString(), email: email }, "7d");
+    setTokenAndCookie(res, { userId: user._id.toString(), email: user.email }, "7d");
 
     response.data = { _id: user._id, email: user.email };
   } catch (error) {

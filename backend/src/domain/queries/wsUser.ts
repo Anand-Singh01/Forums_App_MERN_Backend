@@ -1,11 +1,13 @@
 import { WebSocket } from "ws";
 import RedisClient from "../../infrastructure/database/redis/redisClient";
-import { IMessageRequest } from "../../util/interfaces";
+import { IMessageRequest, IRegisterUser } from "../../util/interfaces";
 import {
   getContactMessagesKey,
   getContactStatusKey,
 } from "../../util/redisKeys";
 import WsStore from "../wsStore/store";
+import { User } from "../models/user";
+import bcrypt from "bcrypt";
 
 const store = WsStore.getInstance();
 const sockets = store.sockets;
@@ -60,3 +62,26 @@ export const publishMessage = async (
     (await RedisClient.getPublisherClient()).publish(key, content);
   }
 };
+
+export const findUserByEmail = async (email: string) => {
+  return await User.findOne({email});
+};
+
+export const createUser = async (data: IRegisterUser)=>{
+  const {dob, email, firstName, lastName, password, userName} = data;
+  
+  const salt = await bcrypt.genSalt();
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  const newUser = new User({
+    userName,
+    password : hashedPassword,
+    firstName,
+    lastName,
+    email,
+    dob,
+  });
+  return await newUser.save();
+}
+
+

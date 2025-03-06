@@ -24,7 +24,6 @@ const commentSchema = new Schema<IComment>({
   commentedBy: { type: Schema.Types.ObjectId, ref: "User" },
   reply: [ { type: Schema.Types.ObjectId, ref: "Reply" }],
   likedBy: [ { type: Schema.Types.ObjectId, ref: "User" }],
-  likes: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

@@ -160,8 +160,23 @@ export const getAllMessageSchema = z.object({
   }),
 });
 
+export const editMessageSchema = z.object({
+  messageId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid messageId",
+  }),
+  newContent: z
+    .string({ required_error: "Message is required" })
+    .min(1, { message: "Message is required." }),
+});
 
-// Save
+export const deleteMessageSchema = z.object({
+  messageId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid messageId",
+  }),
+});
+
+
+// Saveing Posts
 export const savePostSchema = z.object({
   postId: z
   .string()
@@ -185,9 +200,9 @@ export const getAllSavedPostSchema = z.object({
 
 
 
-// Like
+// Liking Posts
 export const likePostSchema = z.object({
-  postId: z
+  commentId: z
   .string()
   .refine((val) => ObjectId.isValid(val), {
     message: "Invalid PostId",
@@ -205,3 +220,5 @@ export const getAllLikedPostSchema = z.object({
     message: "Invalid userId",
   }),
 });
+
+

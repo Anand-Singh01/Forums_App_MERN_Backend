@@ -86,3 +86,19 @@ export const getChatPartnersQuery = async (senderId: string) => {
 
   return res;
 };
+
+export const getMessageByIdQuery = async (messageId: string) => {
+  return await Message.findById(messageId);
+};
+
+export const editMessageQuery = async (messageId: string, newContent: string) => {
+  return await Message.findByIdAndUpdate(
+    messageId,
+    { content: newContent, isEdited: true, updatedAt: new Date() }, 
+    { new: true }
+  );
+};
+
+export const deleteMessageByIdQuery = async (messageId: string) => {
+  return await Message.findByIdAndDelete(messageId);
+};

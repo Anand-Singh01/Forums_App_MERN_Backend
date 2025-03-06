@@ -1,4 +1,5 @@
 import { commentDto, replyDto } from "../../domain/dto/commentsDto";
+import { Types } from "mongoose";
 import {
   addCommentQuery,
   addReplyQuery,
@@ -8,6 +9,7 @@ import {
   getAllReplyQuery,
   updateCommentQuery,
   updateReplyQuery,
+  updateLikeStatusQuery,
 } from "../../domain/queries/comment";
 import { Comment } from "../../domain/models/comment";
 import {
@@ -196,7 +198,7 @@ export const deleteReply = async (replyId: string) => {
 };
 
 
-export const likeComment = async (commentId: string, userId: string) => {
+export const updateLikeStatus = async (commentId: string, userId: string) => {
   let response: ServiceResponse = {
     message: "success",
     status: true,
@@ -205,23 +207,18 @@ export const likeComment = async (commentId: string, userId: string) => {
   };
 
   try {
-    const comment = await Comment.findById(commentId);
-    if (!comment) {
-      throw new Error("Comment not found.");
-    }
+    // ACTIVATE query!!!
+    const {liked, likedBy} = await updateLikeStatusQuery(commentId, userId);    
 
-    if ((comment.likedBy as Types.ObjectId[]).includes(new Types.ObjectId(userId))) {
-      comment.likes -= 1;
-      comment.likedBy = (comment.likedBy as Types.ObjectId[]).filter((id: Types.ObjectId) => id.toString() !== userId);
-      response.message = "Comment unliked successfully.";
+    // liie, no like.
+    if(liked) {
+      response.message = "comment liked successfully";
     } else {
-      comment.likes += 1;
-      comment.likedBy.push(userId);
-      response.message = "Comment liked successfully.";
+      response.message = "comment unliked successfully";
     }
 
-    await comment.save();
-    response.data = {likes: comment.likes, likedBy: comment.likedBy};
+    response.data = {likedBy};
+
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
