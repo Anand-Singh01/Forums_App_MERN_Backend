@@ -6,10 +6,10 @@
 //Saving user and hash code in repo.
 
 import bcrypt from "bcrypt";
-import { User } from "../../domain/models/user";
-import {createToken, setTokenAndCookie} from "../../util/token";
-import { ILoginUser, IRegisterUser, ServiceResponse } from "../../util/interfaces";
 import { Response } from "express";
+import { User } from "../../domain/models/user";
+import { ILoginUser, IRegisterUser, ServiceResponse } from "../../util/interfaces";
+import { setTokenAndCookie } from "../../util/token";
 import dependencies from "../dependencies";
 
 export const registerUser = async (data: IRegisterUser, res:Response): Promise<ServiceResponse> => {
@@ -95,6 +95,3 @@ export const logoutUser = async (res: Response): Promise<ServiceResponse> => {
   }
   return response;
 };
-
-
-

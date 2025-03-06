@@ -1,6 +1,8 @@
-import mongoose, { Types } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 import dependencies from "../../infrastructure/dependencies";
 import { IUpdatePostData } from "../../util/interfaces";
+import { IPost, Post } from "../models/post";
+
 // Saves image on cloud and returns the url.
 export const saveImageOnCloud = async (fileContent: string) => {
   const myCloud = await dependencies.cloud.v2.uploader.upload(fileContent);
@@ -20,76 +22,47 @@ export const addPostQuery = async (
     postImage,
     postedBy: userId,
   });
-  await post.save();
-  return await post.populate({
-    path: "postedBy",
-    select: "profile userName",
-    populate: {
-      path: "profile",
-      select: "profilePicture",
-    },
-  });
+  return await post.save();
 };
 
 // returns the post based on it's Id
 export const getPostByIdQuery = async (postId: string) => {
-  return await dependencies.models.Post.findById(postId).populate({
-    path: "postedBy",
-    select: "profile userName",
-    populate: {
-      path: "profile",
-      select: "profilePicture",
-    },
-  });
+  return await dependencies.models.Post.findById(postId);
 };
 
 // returns all posts from db
 export const getAllPostsQuery = async () => {
-  return await dependencies.models.Post.find()
-    .populate({
-      path: "postedBy",
-      select: "profile userName",
-      populate: {
-        path: "profile",
-        select: "profilePicture",
-      },
-    })
-    .sort({ likedBy: -1, updatedAt: -1 });
+  return await dependencies.models.Post.find().sort({ likedBy: -1, updatedAt: -1 });
 };
 
 // updates a post and returns the updated post.
 export const updatePostQuery = async (
+  oldPost:Document<unknown, {}, IPost> & IPost,
   data: IUpdatePostData,
   fileContent: string | undefined
 ) => {
-  const post = await dependencies.models.Post.findById(data.postId);
-  if (!post) {
-    throw new Error("post not found.");
-  }
-  post.region = data.region;
-  post.caption = data.caption;
+  oldPost.region = data.region;
+  oldPost.caption = data.caption;
   if (data.isImageUpdated && fileContent) {
     const imageUrl = await saveImageOnCloud(fileContent);
     if (!imageUrl) {
       throw new Error("error saving the image.");
     }
-    post.postImage = imageUrl;
+    oldPost.postImage = imageUrl;
   } else if (
     data.isImageUpdated.toLocaleLowerCase() === "true" &&
     !fileContent
   ) {
     throw new Error("image is required to update.");
   }
-  await post.save();
-  return await post.populate({
-    path: "postedBy",
-    select: "profile userName",
-    populate: {
-      path: "profile",
-      select: "profilePicture",
-    },
-  });
+  return await oldPost.save();
 };
+
+export const addCommentToPost = async(postId:string, commentId:string)=>{
+
+  return Post.findByIdAndUpdate(postId, {$push : {comments:commentId}});
+
+}
 
 // deletes a post based on it's Id and returns it.
 export const deletePostQuery = async (postId: string) => {
@@ -98,16 +71,7 @@ export const deletePostQuery = async (postId: string) => {
 
 // returns all the posts based on userId.
 export const getPostsByUserIdQuery = async (userId: string) => {
-  return await dependencies.models.Post.find({ postedBy: userId })
-    .populate({
-      path: "postedBy",
-      select: "profile userName",
-      populate: {
-        path: "profile",
-        select: "profilePicture",
-      },
-    })
-    .sort({ createdAt: -1 });
+  return await dependencies.models.Post.find({ postedBy: userId }).sort({ createdAt: -1 });
 };
 
 export const savePostQuery = async (userId: string, postId: string) => {

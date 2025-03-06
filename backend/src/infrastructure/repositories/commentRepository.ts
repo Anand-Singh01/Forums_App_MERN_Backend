@@ -1,21 +1,36 @@
 import { commentDto, replyDto } from "../../domain/dto/commentsDto";
+import { IReply } from "../../domain/models/reply";
 import {
-  addCommentQuery,
-  addReplyQuery,
+  addReplyToComment,
+  createCommentQuery,
+  createReplyQuery,
+  deleteAllReplyToAComment,
   deleteCommentQuery,
   deleteReplyQuery,
   getAllCommentsQuery,
   getAllReplyQuery,
+  getCommentByIdQuery,
+  getReplyByIdQuery,
   updateCommentQuery,
   updateReplyQuery,
 } from "../../domain/queries/comment";
+import { addCommentToPost } from "../../domain/queries/post";
 import {
+  ICommentDto,
   ICreateComment,
   ICreateReply,
+  IReplyDto,
   IUpdateComment,
   IUpdateReply,
   ServiceResponse,
 } from "../../util/interfaces";
+import {
+  populateComment,
+  populateMultipleComments,
+  populateMultipleReply,
+  populateReply,
+} from "../database/mongo/populate";
+import { getPostById } from "./postRepository";
 
 export const addComment = async (userId: string, data: ICreateComment) => {
   let response: ServiceResponse = {
@@ -26,8 +41,16 @@ export const addComment = async (userId: string, data: ICreateComment) => {
   };
 
   try {
-    const savedComment = await addCommentQuery(data, userId);
-    response.data = commentDto(savedComment);
+    const post = await getPostById(data.postId);
+    if (!post) {
+      throw new Error("Post not found.");
+    }
+    const savedComment = await createCommentQuery(data, userId);
+    await populateComment(savedComment);
+    if (savedComment) {
+      await addCommentToPost(data.postId, savedComment._id.toString());
+      response.data = commentDto(savedComment);
+    }
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
@@ -48,8 +71,17 @@ export const getAllComments = async (postId: string) => {
   };
 
   try {
+    const post = await getPostById(postId);
+    if (!post) {
+      throw new Error("Post not found.");
+    }
     const comments = await getAllCommentsQuery(postId);
-    response.data = comments;
+    await populateMultipleComments(comments);
+    let modifiedComments: ICommentDto[] = [];
+    comments.forEach((comment) => {
+      modifiedComments.push(commentDto(comment));
+    });
+    response.data = modifiedComments;
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
@@ -71,6 +103,10 @@ export const updateComment = async (data: IUpdateComment) => {
 
   try {
     const updatedComment = await updateCommentQuery(data);
+    if (!updatedComment) {
+      throw new Error("Comment not found.");
+    }
+    await populateComment(updatedComment);
     response.data = commentDto(updatedComment);
   } catch (error) {
     response.status = false;
@@ -92,8 +128,13 @@ export const deleteComment = async (commentId: string) => {
   };
 
   try {
-    const res = await deleteCommentQuery(commentId);
-    response.data = res;
+    const comment = await getCommentByIdQuery(commentId);
+    if (!comment) {
+      throw new Error("Comment not found.");
+    }
+    await deleteCommentQuery(commentId);
+    await deleteAllReplyToAComment(commentId);
+    response.data = { commentId };
     response.message = "Comment delete successfully.";
   } catch (error) {
     response.status = false;
@@ -115,7 +156,13 @@ export const addReply = async (userId: string, data: ICreateReply) => {
   };
 
   try {
-    const savedReply = await addReplyQuery(data, userId);
+    const comment = await getCommentByIdQuery(data.commentId);
+    if (!comment) {
+      throw new Error("Comment not found.");
+    }
+    const savedReply = await createReplyQuery(data, userId);
+    await populateReply(savedReply);
+    await addReplyToComment(comment, savedReply._id);
     response.data = replyDto(savedReply);
   } catch (error) {
     response.status = false;
@@ -137,7 +184,19 @@ export const getAllReply = async (commentId: string) => {
   };
 
   try {
-    response.data = await getAllReplyQuery(commentId);
+    const comment = await getCommentByIdQuery(commentId);
+    if (!comment) {
+      throw new Error("Comment not found.");
+    }
+    const replyList = await getAllReplyQuery(commentId);
+    await populateMultipleReply(replyList);
+    let modifiedReply: IReplyDto[] = [];
+
+    replyList.forEach((item) => {
+      modifiedReply.push(replyDto(item));
+    });
+
+    response.data = modifiedReply;
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
@@ -158,7 +217,12 @@ export const updateReply = async (data: IUpdateReply) => {
   };
 
   try {
-    const updatedReply = await updateReplyQuery(data);
+    const oldReply = await getReplyByIdQuery(data.replyId);
+    if (!oldReply) {
+      throw new Error("Reply not found.");
+    }
+    const updatedReply = await updateReplyQuery(oldReply, data);
+    await populateReply(updatedReply);
     response.data = replyDto(updatedReply);
   } catch (error) {
     response.status = false;
@@ -180,8 +244,11 @@ export const deleteReply = async (replyId: string) => {
   };
 
   try {
-    const res = await deleteReplyQuery(replyId);
-    response.data = res;
+    const deletedReply: IReply | null = await deleteReplyQuery(replyId);
+    if (!deletedReply) {
+      throw new Error("Reply not found.");
+    }
+    response.data = { replyId };
     response.message = "reply deleted successfully";
   } catch (error) {
     response.status = false;

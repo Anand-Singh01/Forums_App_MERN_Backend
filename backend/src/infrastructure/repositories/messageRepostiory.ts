@@ -1,10 +1,11 @@
 import { messageDto } from "../../domain/dto/messageDto";
 import { User } from "../../domain/models/user";
 import {
-    getAllConversationQuery,
-    getChatPartnersQuery,
+  getAllConversationQuery,
+  getChatPartnersQuery,
 } from "../../domain/queries/conversation";
 import { ServiceResponse } from "../../util/interfaces";
+import { populateConversations } from "../database/mongo/populate";
 
 export const getAllConversation = async (
   senderId: string,
@@ -25,6 +26,7 @@ export const getAllConversation = async (
     }
     const conversation = await getAllConversationQuery(senderId, receiverId);
     if (conversation) {
+      populateConversations(conversation);
       response.data = messageDto(conversation);
     } else {
       response.message = "no conversation exists with this user";
