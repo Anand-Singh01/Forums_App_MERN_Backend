@@ -5,13 +5,13 @@
 // through the token/cookie.
 //Saving user and hash code in repo
 import bcrypt from "bcrypt";
-import { User } from "../../domain/models/user";
-import {createToken, setTokenAndCookie} from "../../util/token";
-import { ILoginUser, IRegisterUser, ServiceResponse } from "../../util/interfaces";
-import { searchUsers } from "../../domain/queries/search";
 import { Response } from "express";
-import { createDefaultProfile } from "./profileRepository";
+import { User } from "../../domain/models/user";
+import { searchUsers } from "../../domain/queries/search";
+import { ILoginUser, IRegisterUser, ServiceResponse } from "../../util/interfaces";
+import { setTokenAndCookie } from "../../util/token";
 import dependencies from "../dependencies";
+import { createDefaultProfile } from "./profileRepository";
 
 
 // Searching for users by username. I put it here, didnt think it needed a whole new file
@@ -114,6 +114,3 @@ export const logoutUser = async (res: Response): Promise<ServiceResponse> => {
   }
   return response;
 };
-
-
-
