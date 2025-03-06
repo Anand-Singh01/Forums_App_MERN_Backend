@@ -20,6 +20,9 @@ export const updateFollow = async (userId: string, friendId: string) => {
   };
 
   try {
+    if(userId === friendId){
+      throw new Error("Invalid action: You cannot follow your own account.");
+    }
     const user = await getUserById(userId);
     const friend = await getUserById(friendId);
     if (!user) {

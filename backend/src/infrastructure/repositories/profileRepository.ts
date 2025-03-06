@@ -1,5 +1,11 @@
 import { IUpdateProfileData, ServiceResponse } from "../../util/interfaces";
-import dependencies from "../dependencies";
+import {
+  createDefaultProfileQuery,
+  deleteProfileQuery,
+  getAllProfilesQuery,
+  getProfileByUserIdQuery,
+  updateProfileQuery,
+} from "../../domain/queries/profile";
 
 export const createDefaultProfile = async (
   userId: string,
@@ -13,18 +19,14 @@ export const createDefaultProfile = async (
   };
 
   try {
-    const profile = new dependencies.models.Profile({
-      profileName: userName,
-      profileDescription: "",
-      user: userId,
-    });
-
-    const savedProfile = await profile.save();
-    response.data = savedProfile;
+    const profile = await createDefaultProfileQuery(userId, userName);
+    response.data = profile;
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "Failed to create default profile";
-    response.statusCode = 500;
+    if (!response.statusCode || response.statusCode === 200) {
+      response.statusCode = 500;
+    }
     response.data = null;
   }
 
@@ -42,7 +44,7 @@ export const getProfile = async (
   };
 
   try {
-    const profile = await dependencies.models.Profile.findOne({ user: userId });
+    const profile = await getProfileByUserIdQuery(userId);
     if (!profile) {
       response.statusCode = 404;
       throw new Error("Profile not found.");
@@ -74,21 +76,7 @@ export const updateProfile = async (
   };
 
   try {
-    const profile = await dependencies.models.Profile.findOne({ user: userId });
-    if (!profile) {
-      response.statusCode = 404;
-      throw new Error("Profile not found.");
-    }
-
-    profile.profileName = data.name;
-    profile.profileDescription = data.description;
-
-    if (data.isImageUpdated && fileContent) {
-      const myCloud = await dependencies.cloud.v2.uploader.upload(fileContent);
-      profile.profilePicture = myCloud.secure_url;
-    }
-
-    await profile.save();
+    const profile = await updateProfileQuery(userId, data, fileContent);
     response.data = profile;
   } catch (error) {
     response.status = false;
@@ -113,7 +101,7 @@ export const deleteProfile = async (
   };
 
   try {
-    const deletedProfile = await dependencies.models.Profile.findOneAndDelete({ user: userId });
+    const deletedProfile = await deleteProfileQuery(userId);
     if (!deletedProfile) {
       response.statusCode = 404;
       throw new Error("Profile not found.");
@@ -123,6 +111,29 @@ export const deleteProfile = async (
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "Failed to delete profile";
+    if (!response.statusCode || response.statusCode === 200) {
+      response.statusCode = 500;
+    }
+    response.data = null;
+  }
+
+  return response;
+};
+
+export const getAllProfiles = async (): Promise<ServiceResponse> => {
+  let response: ServiceResponse = {
+    message: "Profiles retrieved successfully",
+    status: true,
+    statusCode: 200,
+    data: null,
+  };
+
+  try {
+    const profiles = await getAllProfilesQuery();
+    response.data = profiles;
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message || "Failed to retrieve profiles";
     if (!response.statusCode || response.statusCode === 200) {
       response.statusCode = 500;
     }

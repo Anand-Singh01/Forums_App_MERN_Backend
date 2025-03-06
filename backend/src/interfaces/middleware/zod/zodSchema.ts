@@ -1,4 +1,3 @@
-import exp from "constants";
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
@@ -34,9 +33,7 @@ export const updatePostSchema = z.object({
       (val) => val.toLowerCase() === "true" || val.toLowerCase() === "false",
       {
         message: "Invalid isImageUpdated value.",
-      }
-    ),
-  // .transform((val) => val.toLowerCase === 'true')
+      })
 });
 
 export const deletePostSchema = z.object({
@@ -222,3 +219,86 @@ export const getAllLikedPostSchema = z.object({
 });
 
 
+//Create Profile Scheme 
+export const createProfileSchema = z.object({
+  profileName: z.string({ required_error: "Profile name is required" }),
+  profileDescription: z.string().optional(),
+  user: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid User ID",
+  }),
+});
+
+//Update Profile Scheme 
+
+export const updateProfileSchema = z.object({
+  name: z.string({ required_error: "Name is required" }),
+  description: z.string().optional(),
+  isImageUpdated: z
+    .string()
+    .refine(
+      (val) => val.toLowerCase() === "true" || val.toLowerCase() === "false",
+      {
+        message: "Invalid isImageUpdated value.",
+      }
+    ),
+});
+
+//Delete Profile Scheme 
+
+export const deleteProfileSchema = z.object({
+  userId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid User ID",
+  }),
+});
+
+//Get Profile Scheme 
+export const getProfileByIdSchema = z.object({
+  userId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid User ID",
+  }),
+});
+
+
+  // Add Feedback Schema
+export const addFeedbackSchema = z.object({
+  header: z.string({ required_error: "Header is required" })
+    .min(2, { message: "Header should be at least 2 characters long." })
+    .max(100, { message: "Header can be at most 100 characters long." }),
+  description: z.string({ required_error: "Description is required" })
+    .min(10, { message: "Description should be at least 10 characters long." })
+    .max(2000, { message: "Description can be at most 2000 characters long." }),
+});
+
+// Update Feedback Schema
+export const updateFeedbackSchema = z.object({
+  feedbackId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid Feedback ID",
+  }),
+  header: z.string({ required_error: "Header is required" })
+    .min(2, { message: "Header should be at least 2 characters long." })
+    .max(100, { message: "Header can be at most 100 characters long." }),
+  description: z.string({ required_error: "Description is required" })
+    .min(10, { message: "Description should be at least 10 characters long." })
+    .max(2000, { message: "Description can be at most 2000 characters long." }),
+});
+
+// Delete Feedback Schema
+export const deleteFeedbackSchema = z.object({
+  feedbackId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid Feedback ID",
+  }),
+});
+
+// Get Feedback by ID Schema
+export const getFeedbackByIdSchema = z.object({
+  feedbackId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid Feedback ID",
+  }),
+});
+
+// Get All Feedback by User ID Schema
+export const getAllFeedbackByUserIdSchema = z.object({
+  userId: z.string().refine((val) => ObjectId.isValid(val), {
+    message: "Invalid User ID",
+  }),
+});

@@ -1,15 +1,11 @@
 import { Request, Response, Router } from "express";
-import {
-  createDefaultProfile,
-  getProfile,
-  updateProfile,
-  deleteProfile,
-} from "../../infrastructure/repositories/profileRepository"; 
 import { serverError } from "../../util/helper";
 import { IUpdateProfileData, ServiceResponse } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 import getDataUri from "../middleware/cloud/dataUri";
 import singleUpload from "../middleware/cloud/multer";
+import { createDefaultProfile, deleteProfile, getProfile, updateProfile } from "../../infrastructure/repositories/profileRepository";
+import { createProfileValidation, updateProfileValidation } from "../middleware/validation/profile";
 
 const profileRoutes = Router();
 
@@ -17,6 +13,7 @@ profileRoutes.use(verifyToken);
 
 profileRoutes.post(
   "/create-profile",
+  createProfileValidation,
   async (req: Request, res: Response) => {
     try {
       const { userId }: { userId: string } = res.locals.jwtData;
@@ -54,6 +51,7 @@ profileRoutes.get(
 
 profileRoutes.put(
   "/update-profile",
+  updateProfileValidation,
   singleUpload,
   async (req: Request, res: Response) => {
     try {

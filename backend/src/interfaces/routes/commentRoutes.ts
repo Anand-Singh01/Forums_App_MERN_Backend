@@ -71,8 +71,9 @@ commentRoutes.put(
   updateCommentValidation,
   async (req: Request, res: Response) => {
     try {
+      const { userId } = res.locals.jwtData;
       const data: IUpdateComment = req.body;
-      const response = await updateComment(data);
+      const response = await updateComment(userId, data);
       res
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });
@@ -88,8 +89,9 @@ commentRoutes.delete(
   deleteCommentValidation,
   async (req: Request, res: Response) => {
     try {
+      const { userId } = res.locals.jwtData;
       const { commentId } = req.params;
-      const response = await deleteComment(commentId);
+      const response = await deleteComment(userId, commentId);
       res
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });
@@ -140,8 +142,9 @@ commentRoutes.put(
   updateReplyValidation,
   async (req: Request, res: Response) => {
     try {
+      const { userId } = res.locals.jwtData;
       const data: IUpdateReply = req.body;
-      const response = await updateReply(data);
+      const response = await updateReply(userId, data);
       res
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });
@@ -157,8 +160,9 @@ commentRoutes.delete(
   deleteReplyValidation,
   async (req: Request, res: Response) => {
     try {
+      const { userId } = res.locals.jwtData;
       const { replyId } = req.params;
-      const response = await deleteReply(replyId);
+      const response = await deleteReply(userId, replyId);
       res
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });
