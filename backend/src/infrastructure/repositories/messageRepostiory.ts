@@ -26,7 +26,7 @@ export const getAllConversation = async (
     }
     const conversation = await getAllConversationQuery(senderId, receiverId);
     if (conversation) {
-      populateConversations(conversation);
+      await populateConversations(conversation);
       response.data = messageDto(conversation);
     } else {
       response.message = "no conversation exists with this user";

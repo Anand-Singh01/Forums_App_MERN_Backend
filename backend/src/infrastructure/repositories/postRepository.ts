@@ -107,6 +107,7 @@ export const getAllPosts = async () => {
 };
 
 export const updatePost = async (
+  userId:string,
   data: IUpdatePostData,
   fileContent: string | undefined
 ) => {
@@ -122,6 +123,9 @@ export const updatePost = async (
     if (!post) {
       throw new Error("post not found.");
     }
+    if(post.postedBy.toString() !== userId){
+      throw new Error("unauthorized to update post.");
+    }
     const updatedPost = await updatePostQuery(post, data, fileContent);
     await populatePost(updatedPost);
     response.data = postDto(updatedPost);
@@ -136,7 +140,7 @@ export const updatePost = async (
   return response;
 };
 
-export const deletePost = async (postId: string) => {
+export const deletePost = async (userId:string, postId: string) => {
   let response: ServiceResponse = {
     message: "success",
     status: true,
@@ -145,6 +149,13 @@ export const deletePost = async (postId: string) => {
   };
 
   try {
+    const post = await getPostByIdQuery(postId);
+    if(!post){
+      throw new Error("post not found.");
+    }
+    if(post.postedBy.toString() !== userId){
+      throw new Error("unauthorized to delete post.");
+    }
     const deletedPost = await deletePostQuery(postId);
     if (!deletedPost) {
       response.statusCode = 404;

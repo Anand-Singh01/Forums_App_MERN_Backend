@@ -14,6 +14,8 @@ import profileRoutes from "../../interfaces/routes/profileRoutes";
 import savePostRoutes from "../../interfaces/routes/savePostRoutes";
 import searchRoutes from "../../interfaces/routes/searchRoutes";
 import { verifyToken } from "../../util/token";
+import { startWorker1 } from "../worker/worker";
+import { initializeWsServer } from "../ws/wsServer";
 
 const app = express();
 const PORT = 3000;
@@ -47,13 +49,13 @@ const startServer = async () => {
   try {
     await connectToDatabase();
     console.log("Connected to database.");
-    
+
     httpServer.listen(PORT, async () => {
       console.log(`Http server listening on http://localhost:${PORT}`);
     });
 
-    // initializeWsServer(httpServer);
-    // await startWorker1();
+    initializeWsServer(httpServer);
+    await startWorker1();
   } catch (error) {
     console.error(error);
   }

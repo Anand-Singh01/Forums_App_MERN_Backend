@@ -69,11 +69,7 @@ export const populatePost = async (
 ) => {
   return await post.populate({
     path: "postedBy",
-    select: "profile userName",
-    populate: {
-      path: "profile",
-      select: "profilePicture",
-    },
+    select: "profile userName _id",
   });
 };
 
@@ -97,12 +93,11 @@ export const populateMultiplePost = async (
 export const populateConversations = async (
   conversation: Document<unknown, {}, IConversation> & IConversation
 ) => {
-  return conversation.populate([
-    { path: "messages", select: "content isEdited sender createdAt" },
-    { 
-      path: "participants", 
+  return await conversation.populate([
+    { path: "messages", select: "_id content isEdited sender createdAt" },
+    {
+      path: "participants",
       select: "userName _id",
-      populate: { path: "profile", select: "profilePicture" }
-    }
-  ]);  
+    },
+  ]);
 };
