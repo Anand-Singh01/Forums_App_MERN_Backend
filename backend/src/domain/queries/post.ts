@@ -93,7 +93,7 @@ export const savePostQuery = async (userId: string, postId: string) => {
 
   (user.savedPosts as Types.ObjectId[]).push(postObjectId);
 
-//   await user.save();
+   await user.save();
 
   if (!(post.savedBy as Types.ObjectId[]).includes(userObjectId)) {
     (post.savedBy as Types.ObjectId[]).push(userObjectId);
@@ -159,10 +159,9 @@ export const likePostQuery = async (userId: string, postId: string) => {
   if ((user.likedPosts as Types.ObjectId[]).includes(postObjectId)) {
     throw new Error("Post is already liked.");
   }
-
   (user.likedPosts as Types.ObjectId[]).push(postObjectId);
 
-//   await user.save();
+   await user.save();
 
   if (!(post.likedBy as Types.ObjectId[]).includes(userObjectId)) {
     (post.likedBy as Types.ObjectId[]).push(userObjectId);
