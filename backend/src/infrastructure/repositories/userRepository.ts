@@ -5,12 +5,12 @@
 // through the token/cookie.
 //Saving user and hash code in repo
 import bcrypt from "bcrypt";
-import { User } from "../../domain/models/user";
-import {createToken, setTokenAndCookie} from "../../util/token";
-import { ILoginUser, IRegisterUser, ServiceResponse } from "../../util/interfaces";
 import { Response } from "express";
-import { createDefaultProfile } from "./profileRepository";
+import { User } from "../../domain/models/user";
+import { ILoginUser, IRegisterUser, ServiceResponse } from "../../util/interfaces";
+import { setTokenAndCookie } from "../../util/token";
 import dependencies from "../dependencies";
+import { createDefaultProfile } from "./profileRepository";
 import { createUser, findUserByEmail } from "../../domain/queries/wsUser";
 
 
@@ -101,6 +101,3 @@ export const logoutUser = async (res: Response): Promise<ServiceResponse> => {
   }
   return response;
 };
-
-
-

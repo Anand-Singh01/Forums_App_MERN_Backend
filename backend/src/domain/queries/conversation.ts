@@ -40,23 +40,9 @@ export const getAllConversationQuery = async (
   senderId: string,
   receiverId: string
 ) => {
-  const conversation = await Conversation.findOne({
+  return await Conversation.findOne({
     participants: { $all: [senderId, receiverId] },
-  })
-    .populate({
-      path: "messages",
-      select: "content isEdited sender createdAt",
-    })
-    .populate({
-      path: "participants",
-      select: "userName _id",
-      populate: {
-        path: "profile",
-        select: "profilePicture",
-      },
-    })
-    .sort({ createdAt: 1 });
-  return conversation;
+  }).sort({ createdAt: 1 });
 };
 
 export const getChatPartnersQuery = async (senderId: string) => {
