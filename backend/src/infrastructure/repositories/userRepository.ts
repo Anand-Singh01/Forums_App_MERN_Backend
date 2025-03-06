@@ -8,17 +8,10 @@ import bcrypt from "bcrypt";
 import { User } from "../../domain/models/user";
 import {createToken, setTokenAndCookie} from "../../util/token";
 import { ILoginUser, IRegisterUser, ServiceResponse } from "../../util/interfaces";
-import { searchUsers } from "../../domain/queries/search";
 import { Response } from "express";
 import { createDefaultProfile } from "./profileRepository";
 import dependencies from "../dependencies";
 import { createUser, findUserByEmail } from "../../domain/queries/wsUser";
-
-
-// Searching for users by username. I put it here, didnt think it needed a whole new file
-export const findUsers = async (userName: string) => {
-  return await searchUsers(userName);
-};
 
 
 export const registerUser = async (data: IRegisterUser, res:Response): Promise<ServiceResponse> => {
