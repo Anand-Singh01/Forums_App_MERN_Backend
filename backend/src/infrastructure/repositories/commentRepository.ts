@@ -1,5 +1,5 @@
-import { IReply } from "../../domain/models/reply";
 import { commentDto, replyDto } from "../../domain/dto/commentsDto";
+import { IReply } from "../../domain/models/reply";
 import {
   addReplyToComment,
   createCommentQuery,
@@ -12,8 +12,8 @@ import {
   getCommentByIdQuery,
   getReplyByIdQuery,
   updateCommentQuery,
-  updateReplyQuery,
   updateLikeStatusQuery,
+  updateReplyQuery,
 } from "../../domain/queries/comment";
 import { addCommentToPost } from "../../domain/queries/post";
 import {
@@ -32,7 +32,6 @@ import {
   populateReply,
 } from "../database/mongo/populate";
 import { getPostById } from "./postRepository";
-import dependencies from "../dependencies";
 
 export const addComment = async (userId: string, data: ICreateComment) => {
   let response: ServiceResponse = {
