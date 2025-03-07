@@ -50,3 +50,4 @@ docker start redis-container
     ```  
 
   ![Authentication Token](2.png)
+```
