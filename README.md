@@ -33,3 +33,21 @@ If you already have a Redis container but it's stopped, start it with:
 ```sh
 docker start redis-container
 ```
+
+## WebSocket Messaging  
+- When sending a message, ensure you include the following fields:  
+  - `senderId`
+  - `receiverId`
+  - `content`
+
+  ![Message Structure](1.png)  
+
+- **Authentication:**  
+  - Manually add the authentication token in the request headers.  
+  - Token will be generated from this endpoint after logging in:  
+    ```
+    http://localhost:3000/api/auth/get-ws-token
+    ```  
+
+  ![Authentication Token](2.png)
+```
