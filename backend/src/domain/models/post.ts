@@ -2,7 +2,7 @@ import { model, Schema, Types } from "mongoose";
 import { IComment } from "./comment";
 import { IUser } from "./user";
 
-export interface IPost extends Document {
+export interface IPost {
   _id: Types.ObjectId;
   caption: string;
   region: string | null;
