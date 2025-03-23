@@ -132,6 +132,7 @@ export interface IPostDto {
   postedBy: {
     userId: string;
     userName: string;
+    profileImage:string;
   };
   totalLikes: number;
   totalSave: number;
@@ -151,4 +152,15 @@ export interface ISearchUserData {
   userId: string;
   profilePicture: string | null;
   userName: string;
+}
+
+export interface IUserInfoDto {
+  userId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  userName: string;
+  profileName: string;
+  profilePicture: string;
+  dob: Date;
 }

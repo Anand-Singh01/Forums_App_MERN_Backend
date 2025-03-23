@@ -12,7 +12,6 @@ import { ITokenData } from "../util/interfaces";
 const COOKIE_NAME: string =
   dependencies.config.cookie.cookieName || "auth_token";
 const JWT_SECRET = dependencies.config.cookie.jwtSecret || "secret";
-const ENVIRONMENT: string = dependencies.config.environment;
 
 export const createToken = (data: ITokenData, expiresIn: string): string => {
   return jwt.sign(data, JWT_SECRET, {
@@ -55,22 +54,24 @@ export const setTokenAndCookie = (
   data: ITokenData,
   expiresIn: string
 ) => {
+  const isProduction = dependencies.config.environment === 'production';
   res.clearCookie(COOKIE_NAME!, {
     path: "/",
     sameSite: "none",
     httpOnly: true,
-    secure: ENVIRONMENT === "production",
+    secure: !isProduction,
     signed: true,
   });
   const token = createToken(data, expiresIn);
   const newDate = new Date();
   newDate.setDate(newDate.getDate() + 7);
+  
   res.cookie(COOKIE_NAME!, token, {
     path: "/",
     expires: newDate,
     sameSite: "none",
     httpOnly: true,
-    secure: true,
+    secure: !isProduction,
     signed: true,
   });
 };

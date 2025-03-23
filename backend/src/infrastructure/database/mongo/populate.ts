@@ -77,8 +77,8 @@ export const populateMultiplePost = async (
   posts: (Document<unknown, {}, IPost> & IPost)[]
 ) => {
   return Promise.all(
-    posts.map((p) => {
-      p.populate({
+    posts.map(async(p) => {
+      await p.populate({
         path: "postedBy",
         select: "profile userName",
         populate: {
@@ -100,4 +100,11 @@ export const populateConversations = async (
       select: "userName _id",
     },
   ]);
+};
+
+export const populateUser = async (user: Document) => {
+  return await user.populate({
+    path: "profile",
+    select: "profilePicture profileName",
+  });
 };

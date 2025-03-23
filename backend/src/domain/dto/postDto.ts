@@ -14,6 +14,7 @@ export const postDto = (post: IPost) => {
     postedBy: {
       userId: user._id.toString(),
       userName: user.userName,
+      profileImage:profile?.profilePicture || ""
     },
     totalComments: post.comments.length,
     totalLikes: post.likedBy.length,

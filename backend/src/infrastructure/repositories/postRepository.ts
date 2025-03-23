@@ -1,4 +1,5 @@
 import { postDto } from "../../domain/dto/postDto";
+import { IPost } from "../../domain/models/post";
 import {
   addPostQuery,
   deletePostQuery,
@@ -92,7 +93,7 @@ export const getAllPosts = async () => {
     await populateMultiplePost(post);
     let modifiedPosts: IPostDto[] = [];
     post.forEach((p) => {
-      modifiedPosts.push(postDto(p));
+      modifiedPosts.push(postDto(p as IPost));
     });
     response.data = modifiedPosts;
   } catch (error) {

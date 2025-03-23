@@ -2,12 +2,12 @@ import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import dependencies from "../../infrastructure/dependencies";
 import {
+  checkAuth,
   loginUser,
   logoutUser,
   registerUser,
 } from "../../infrastructure/repositories/userRepository";
 import { serverError } from "../../util/helper";
-import { ILoginUser, IRegisterUser } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 
 const authRoutes = express.Router();
@@ -15,7 +15,9 @@ const authRoutes = express.Router();
 authRoutes.post("/register", async (req: Request, res: Response) => {
   try {
     const response = await registerUser(req.body, res);
-    res.status(response.statusCode).json({ message: response.message, data: response.data });
+    res
+      .status(response.statusCode)
+      .json({ message: response.message, data: response.data });
   } catch (error) {
     serverError(res, error);
   }
@@ -24,15 +26,25 @@ authRoutes.post("/register", async (req: Request, res: Response) => {
 authRoutes.post("/login", async (req: Request, res: Response) => {
   try {
     const response = await loginUser(req.body, res);
-    res.status(response.statusCode).json({ message: response.message, data: response.data });
+    res
+      .status(response.statusCode)
+      .json({ message: response.message, data: response.data });
   } catch (error) {
     serverError(res, error);
   }
 });
 
-authRoutes.get("/verify", verifyToken, async (req: Request, res: Response) => {
-  res.json({ message: "Authenticated user", user: res.locals.jwtData });
-});
+authRoutes.get(
+  "/check-auth",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    const { email } = res.locals.jwtData;
+    const response = await checkAuth(email, res);
+    res
+      .status(response.statusCode)
+      .json({ message: response.message, data: response.data });
+  }
+);
 
 authRoutes.get("/logout", verifyToken, async (req: Request, res: Response) => {
   const response = await logoutUser(res);

@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { WebSocket } from "ws";
 import RedisClient from "../../infrastructure/database/redis/redisClient";
 import { IMessageRequest, IRegisterUser } from "../../util/interfaces";
@@ -5,9 +6,8 @@ import {
   getContactMessagesKey,
   getContactStatusKey,
 } from "../../util/redisKeys";
-import WsStore from "../wsStore/store";
 import { User } from "../models/user";
-import bcrypt from "bcrypt";
+import WsStore from "../wsStore/store";
 
 const store = WsStore.getInstance();
 const sockets = store.sockets;
@@ -83,5 +83,3 @@ export const createUser = async (data: IRegisterUser)=>{
   });
   return await newUser.save();
 }
-
-
