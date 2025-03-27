@@ -23,6 +23,12 @@ export interface ServiceResponse<T = unknown> {
   data: T | null;
 }
 
+export interface IMessageRequest {
+  senderId: string;
+  receiverId: string;
+  message: string;
+}
+
 export interface IRegisterUser {
   email: string;
   password: string;
@@ -67,12 +73,6 @@ export interface IUpdateComment {
 export interface IUpdateReply {
   replyId: string;
   reply: string;
-}
-
-export interface IMessageRequest {
-  senderId: string;
-  receiverId: string;
-  message: string;
 }
 
 export interface ICommentDto {
