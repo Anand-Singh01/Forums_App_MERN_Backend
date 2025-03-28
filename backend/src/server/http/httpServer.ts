@@ -16,6 +16,7 @@ import savePostRoutes from "../../interfaces/routes/savePostRoutes";
 import { verifyToken } from "../../util/token";
 import { startWorker1 } from "../worker/worker";
 import { initializeWsServer } from "../ws/wsServer";
+import aiRoutes from "../../interfaces/routes/aiRoutes";
 
 const app = express();
 const PORT = 3000;
@@ -43,6 +44,7 @@ app.use("/api/like", likePostRoutes);
 app.use("/api/feedback", feedbackRoutes); 
 
 app.use("/api/conversation", conversationRoutes);
+app.use("/api/ai", aiRoutes);
 
 const httpServer = createServer(app);
 
@@ -55,8 +57,8 @@ const startServer = async () => {
       console.log(`Http server listening on http://localhost:${PORT}`);
     });
 
-    initializeWsServer(httpServer);
-    await startWorker1();
+    //initializeWsServer(httpServer);
+    //await startWorker1();
   } catch (error) {
     console.error(error);
   }
