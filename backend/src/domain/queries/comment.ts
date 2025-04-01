@@ -23,7 +23,7 @@ export const createCommentQuery = async (
 };
 
 export const getAllCommentsQuery = async (postId: string) => {
-  const comments = await Comment.find({ commentedPost: postId });
+  const comments = await Comment.find({ commentedPost: postId }).sort({updatedAt:"descending"});
   return comments;
 };
 

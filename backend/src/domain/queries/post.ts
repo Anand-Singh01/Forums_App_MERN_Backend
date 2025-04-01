@@ -32,7 +32,7 @@ export const getPostByIdQuery = async (postId: string) => {
 
 // returns all posts from db
 export const getAllPostsQuery = async () => {
-  return await dependencies.models.Post.find().sort({ likedBy: -1, updatedAt: -1 });
+  return await dependencies.models.Post.find().sort({updatedAt: -1});
 };
 
 // updates a post and returns the updated post.

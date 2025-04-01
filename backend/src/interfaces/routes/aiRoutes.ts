@@ -1,5 +1,5 @@
 import express from "express";
-import { getAiResponse } from "../../services/A.I/GoogleAiService"; 
+import { getAiResponse } from "../../services/A.I/GoogleAiService";
 const router = express.Router();
 
 router.post("/chat", async (req, res) => {

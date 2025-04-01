@@ -4,6 +4,7 @@ import express from "express";
 import { createServer } from "http";
 import { connectToDatabase } from "../../infrastructure/database/mongo/connection";
 import dependencies from "../../infrastructure/dependencies";
+import aiRoutes from "../../interfaces/routes/aiRoutes";
 import authRoutes from "../../interfaces/routes/authRoutes";
 import commentRoutes from "../../interfaces/routes/commentRoutes";
 import feedbackRoutes from "../../interfaces/routes/feedbackRoutes";
@@ -16,7 +17,6 @@ import savePostRoutes from "../../interfaces/routes/savePostRoutes";
 import { verifyToken } from "../../util/token";
 import { startWorker1 } from "../worker/worker";
 import { initializeWsServer } from "../ws/wsServer";
-import aiRoutes from "../../interfaces/routes/aiRoutes";
 
 const app = express();
 const PORT = 3000;
@@ -57,8 +57,8 @@ const startServer = async () => {
       console.log(`Http server listening on http://localhost:${PORT}`);
     });
 
-    //initializeWsServer(httpServer);
-    //await startWorker1();
+    initializeWsServer(httpServer);
+    await startWorker1();
   } catch (error) {
     console.error(error);
   }

@@ -129,6 +129,7 @@ export interface IPostDto {
   caption: string;
   region: string | null;
   postImage: string;
+  isLiked:boolean,
   postedBy: {
     userId: string;
     userName: string;
