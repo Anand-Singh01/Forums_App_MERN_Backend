@@ -142,6 +142,11 @@ export interface IPostDto {
   updatedAt: Date;
 }
 
+export interface ILikedPostDto {
+  postId: string;
+  postImage: string;
+}
+
 export interface IFollowerDto {
   userId: string;
   profilePicture: string;

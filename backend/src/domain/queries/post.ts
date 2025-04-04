@@ -203,7 +203,6 @@ export const unlikePostQuery = async (userId: string, postId: string) => {
 export const getAllLikedPostsQuery = async (userId: string) => {
   return await dependencies.models.User.findById(userId).populate({
     path: "likedPosts",
-
     select:
       "caption location postImage totalLikes postedBy likedBy savedBy comments createdAt updatedAt",
 
