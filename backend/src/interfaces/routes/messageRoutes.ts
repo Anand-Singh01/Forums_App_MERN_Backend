@@ -1,9 +1,9 @@
 import { Request, Response, Router } from "express";
 import {
+  deleteMessage,
+  editMessage,
   getAllConversation,
   getChatPartners,
-  editMessage,
-  deleteMessage,
 } from "../../infrastructure/repositories/messageRepostiory";
 import { getAllMessagesValidation } from "../middleware/validation/message";
 import { deleteMessageSchema, editMessageSchema } from "../middleware/zod/zodSchema";

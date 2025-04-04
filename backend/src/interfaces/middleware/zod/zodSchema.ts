@@ -146,6 +146,7 @@ export const addMessageSchema = z.object({
   receiverId: z.string().refine((val) => ObjectId.isValid(val), {
     message: "Invalid receiverId",
   }),
+  type:z.string({required_error:"Type is required"}),
   message: z
     .string({ required_error: "Message is required" })
     .min(1, { message: "Message is required." }),

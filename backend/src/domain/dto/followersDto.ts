@@ -2,7 +2,7 @@ import { IFollowerDto } from "../../util/interfaces";
 import { IProfile } from "../models/profile";
 import { IUser } from "../models/user";
 
-export const followerDto = (user: IUser) => {
+export const followerDto = (userId:string, user: IUser) => {
   const profile = user.profile as IProfile;
   let res = {
     userId: user._id.toString(),
