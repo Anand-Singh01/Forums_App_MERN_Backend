@@ -135,7 +135,6 @@ export const unsavePostQuery = async (userId: string, postId: string) => {
 export const getAllSavedPostsQuery = async (userId: string) => {
   return await dependencies.models.User.findById(userId).populate({
     path: "savedPosts",
-
     select:
       "caption location postImage totalLikes postedBy likedBy savedBy comments createdAt updatedAt",
 

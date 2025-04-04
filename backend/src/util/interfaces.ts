@@ -147,6 +147,11 @@ export interface ILikedPostDto {
   postImage: string;
 }
 
+export interface ISavedPostDto {
+  postId: string;
+  postImage: string;
+}
+
 export interface IFollowerDto {
   userId: string;
   profilePicture: string;

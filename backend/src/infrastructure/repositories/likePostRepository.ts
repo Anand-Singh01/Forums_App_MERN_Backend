@@ -75,9 +75,7 @@ export const getAllLikedPosts = async (
       likedPosts.push(toLikedPostDto(post as IPost));
     })
     response.data = likedPosts;
-    }
-
-   catch (error) {
+    } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "Unexpected error occurred";
     response.statusCode = response.statusCode || 500;

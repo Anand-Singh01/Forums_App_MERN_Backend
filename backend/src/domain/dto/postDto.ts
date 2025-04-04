@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { ILikedPostDto, IPostDto } from "../../util/interfaces";
+import { ILikedPostDto, IPostDto, ISavedPostDto } from "../../util/interfaces";
 import { IPost } from "../models/post";
 import { IProfile } from "../models/profile";
 import { IUser } from "../models/user";
@@ -34,5 +34,13 @@ export const toLikedPostDto = (post: IPost) => {
     postId: post._id.toString(),
     postImage: post.postImage,
   } as ILikedPostDto;
+  return res;
+};
+
+export const toSavedPostDto = (post: IPost) => {
+  let res = {
+    postId: post._id.toString(),
+    postImage: post.postImage,
+  } as ISavedPostDto;
   return res;
 };
