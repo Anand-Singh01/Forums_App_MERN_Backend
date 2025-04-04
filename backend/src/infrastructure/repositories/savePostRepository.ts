@@ -1,9 +1,12 @@
+import { toSavedPostDto } from "../../domain/dto/postDto";
+import { IPost } from "../../domain/models/post";
 import {
-    getAllLikedPostsQuery,
+    getAllSavedPostsQuery,
     savePostQuery,
     unsavePostQuery
 } from "../../domain/queries/post";
-import { ISavePostData, ServiceResponse } from "../../util/interfaces";
+import { use } from "../../interfaces/routes/authRoutes";
+import { ISavedPostDto, ISavePostData, ServiceResponse } from "../../util/interfaces";
 
 export const savePost = async (
   userId: string,
@@ -63,14 +66,16 @@ export const getAllSavedPosts = async (
 
   try {
     // User Exists?
-    const user = await getAllLikedPostsQuery(userId);
-
+    const user = await getAllSavedPostsQuery(userId);
     if (!user) {
       response.statusCode = 404;
       throw new Error("User not found.");
     }
-
-    response.data = user.savedPosts;
+    let savedPosts = [] as ISavedPostDto[];
+    user.savedPosts.map((post) => {
+      savedPosts.push(toSavedPostDto(post as IPost));
+    })
+    response.data = savedPosts;
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "Unexpected error occurred";

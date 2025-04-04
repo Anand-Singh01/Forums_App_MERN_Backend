@@ -1,9 +1,12 @@
+import { toLikedPostDto } from "../../domain/dto/postDto";
+import { IPost } from "../../domain/models/post";
 import {
     getAllLikedPostsQuery,
     likePostQuery,
     unlikePostQuery,
 } from "../../domain/queries/post";
-import { ILikePostData, ServiceResponse } from "../../util/interfaces";
+import { use } from "../../interfaces/routes/authRoutes";
+import { ILikedPostDto, ILikePostData, ServiceResponse } from "../../util/interfaces";
 
 export const likePost = async (
   userId: string,
@@ -63,18 +66,19 @@ export const getAllLikedPosts = async (
 
   try {
     const user = await getAllLikedPostsQuery(userId);
-
     if (!user) {
       response.statusCode = 404;
       throw new Error("User not found.");
     }
-
-    response.data = user.likedPosts;
-  } catch (error) {
+    let likedPosts = [] as ILikedPostDto[];
+    user.likedPosts.map((post)=>{
+      likedPosts.push(toLikedPostDto(post as IPost));
+    })
+    response.data = likedPosts;
+    } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "Unexpected error occurred";
     response.statusCode = response.statusCode || 500;
   }
-
   return response;
 };
