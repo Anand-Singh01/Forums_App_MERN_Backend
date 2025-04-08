@@ -73,7 +73,7 @@ export const addReplyToComment = async (
 export const getAllReplyQuery = async (commentId: string) => {
   const reply = await Reply.find({
     replyToComment: commentId,
-  });
+  }).sort({updatedAt:"descending"});;
   return reply;
 };
 

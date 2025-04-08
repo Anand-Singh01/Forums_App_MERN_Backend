@@ -14,6 +14,7 @@ import conversationRoutes from "../../interfaces/routes/messageRoutes";
 import postRoutes from "../../interfaces/routes/postRoutes";
 import profileRoutes from "../../interfaces/routes/profileRoutes";
 import savePostRoutes from "../../interfaces/routes/savePostRoutes";
+import userRoutes from "../../interfaces/routes/userRoutes";
 import { verifyToken } from "../../util/token";
 import { startWorker1 } from "../worker/worker";
 import { initializeWsServer } from "../ws/wsServer";
@@ -36,6 +37,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use(verifyToken);
 app.use("/api/post", postRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/follow", followRoutes);
@@ -57,8 +59,8 @@ const startServer = async () => {
       console.log(`Http server listening on http://localhost:${PORT}`);
     });
 
-    initializeWsServer(httpServer);
-    await startWorker1();
+    //initializeWsServer(httpServer);
+    //await startWorker1();
   } catch (error) {
     console.error(error);
   }

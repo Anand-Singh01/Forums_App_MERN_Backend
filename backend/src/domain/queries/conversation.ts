@@ -50,7 +50,7 @@ export const getChatPartnersQuery = async (senderId: string) => {
     participants: { $in: [senderId] },
   }).populate({
     path: "participants",
-    select: "userName _id",
+    select: "userName _id followers",
     populate: {
       path: "profile",
       select: "profilePicture",
@@ -62,10 +62,11 @@ export const getChatPartnersQuery = async (senderId: string) => {
   );
 
   let res: IFollowerDto[] = [];
-  (chatPartners as IUser[]).forEach(({ _id, profile, userName }) => {
+  (chatPartners as IUser[]).forEach(({ _id, profile, userName, followers }) => {
     res.push({
       userId: _id.toString(),
       profilePicture: (profile as IProfile).profilePicture,
+      isFollowing: (followers as Types.ObjectId[]).includes(new Types.ObjectId(senderId)),
       userName,
     });
   });

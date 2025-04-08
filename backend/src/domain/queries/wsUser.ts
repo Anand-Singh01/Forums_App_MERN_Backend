@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { WebSocket } from "ws";
 import RedisClient from "../../infrastructure/database/redis/redisClient";
-import { IMessageRequest, IRegisterUser } from "../../util/interfaces";
+import { IMessageRequest, IMessageResponse, IRegisterUser } from "../../util/interfaces";
 import {
   getContactMessagesKey,
   getContactStatusKey,
@@ -60,6 +60,17 @@ export const publishMessage = async (
     const key = getContactMessagesKey(receiverId);
     const content = JSON.stringify({ senderId, message });
     (await RedisClient.getPublisherClient()).publish(key, content);
+  }
+};
+
+export const sendChatMessageToWsUser = async (
+  msg: IMessageRequest
+) => {
+  const { message, receiverId, senderId } = msg;
+  const ws = sockets.get(receiverId);
+  if (ws) {
+    const content = JSON.stringify({ senderId, message, receiverId, type:"message" } as IMessageResponse);
+    ws.send(content);
   }
 };
 

@@ -97,7 +97,11 @@ export const populateConversations = async (
     { path: "messages", select: "_id content isEdited sender createdAt" },
     {
       path: "participants",
-      select: "userName _id",
+      select: "userName _id profile",
+      populate: {
+        path: "profile",
+        select: "profilePicture" // Add any other profile fields you need
+      }
     },
   ]);
 };

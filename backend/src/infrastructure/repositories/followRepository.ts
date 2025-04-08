@@ -65,7 +65,7 @@ export const followersList = async (userId: string) => {
     }
     let modifiedFollowers = [] as IFollowerDto[];
     followers.forEach((user) => {
-      modifiedFollowers.push(followerDto(user));
+      modifiedFollowers.push(followerDto(userId, user));
     });
     response.data = modifiedFollowers;
   } catch (error) {
@@ -95,7 +95,7 @@ export const followingList = async (userId: string) => {
     }
     let modifiedFollowing = [] as IFollowerDto[];
     following.forEach((user) => {
-      modifiedFollowing.push(followerDto(user));
+      modifiedFollowing.push(followerDto(userId, user));
     });
     response.data = modifiedFollowing;
   } catch (error) {

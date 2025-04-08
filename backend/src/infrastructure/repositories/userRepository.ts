@@ -6,11 +6,15 @@
 //Saving user and hash code in repo
 import bcrypt from "bcrypt";
 import { Response } from "express";
-import { toUserInfoDto } from "../../domain/dto/userDto";
+import { toRandomUserInfoDto, toUserInfoDto } from "../../domain/dto/userDto";
+import { IProfile } from "../../domain/models/profile";
+import { getGeneralUserInfo, getRandomUsers } from "../../domain/queries/user";
 import { createUser, findUserByEmail } from "../../domain/queries/wsUser";
 import {
   ILoginUser,
+  IRandomUserInfoDto,
   IRegisterUser,
+  IUserGeneralInfo,
   ServiceResponse,
 } from "../../util/interfaces";
 import { setTokenAndCookie } from "../../util/token";
@@ -156,3 +160,60 @@ export const logoutUser = async (res: Response): Promise<ServiceResponse> => {
   }
   return response;
 };
+
+export const randomAccount = async (userId:string): Promise<ServiceResponse> => {
+  let response: ServiceResponse = {
+    status: true,
+    statusCode: 200,
+    message: "User logged out",
+    data: null,
+  };
+
+  try {
+    const res = await getRandomUsers(userId);
+    if (!res) {
+      response.statusCode = 401;
+      throw new Error("User not found");
+    }
+    let users : IRandomUserInfoDto[] = [];
+    res.map((user)=>{
+      users.push(toRandomUserInfoDto(userId, user));
+    });
+    response.data = users;
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message;
+    response.statusCode = 500;
+  }
+  return response;
+};
+
+export const generalUserInfo = async (userId:string): Promise<ServiceResponse> => {
+  let response: ServiceResponse = {
+    status: true,
+    statusCode: 200,
+    message: "User logged out",
+    data: null,
+  };
+
+  try {
+    const info = await getGeneralUserInfo(userId);
+    if (!info) {
+      response.statusCode = 401;
+      throw new Error("User not found");
+    }
+    const res = {
+      userName:info.userName,
+      email:info.email,
+      joinedOn:info.updatedAt,
+      profilePicture:(info.profile as IProfile).profilePicture
+    } as IUserGeneralInfo
+    response.data = res;
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message;
+    response.statusCode = 500;
+  }
+  return response;
+};
+

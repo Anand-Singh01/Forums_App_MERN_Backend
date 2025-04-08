@@ -24,6 +24,14 @@ export interface ServiceResponse<T = unknown> {
 }
 
 export interface IMessageRequest {
+  type: "message"|"status"|"notification";
+  senderId: string;
+  receiverId: string;
+  message: string;
+}
+
+export interface IMessageResponse {
+  type: "message"|"status"|"notification";
   senderId: string;
   receiverId: string;
   message: string;
@@ -142,10 +150,21 @@ export interface IPostDto {
   updatedAt: Date;
 }
 
+export interface ILikedPostDto {
+  postId: string;
+  postImage: string;
+}
+
+export interface ISavedPostDto {
+  postId: string;
+  postImage: string;
+}
+
 export interface IFollowerDto {
   userId: string;
   profilePicture: string;
   userName: string;
+  isFollowing?:boolean
 }
 
 
@@ -164,4 +183,18 @@ export interface IUserInfoDto {
   profileName: string;
   profilePicture: string;
   dob: Date;
+}
+
+export interface IRandomUserInfoDto{
+  userId: string;
+  userName: string;
+  profilePicture: string;
+  isFollowing:boolean
+}
+
+export interface IUserGeneralInfo{
+  userName: string;
+  profilePicture: string;
+  joinedOn:Date,
+  email:string,
 }

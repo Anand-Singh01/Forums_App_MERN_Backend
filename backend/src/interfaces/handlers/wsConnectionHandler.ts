@@ -1,9 +1,9 @@
 import { RedisClientType } from "redis";
 import { WebSocket } from "ws";
 import {
-  publishMessage,
   publishOnlineStatus,
   removeUser,
+  sendChatMessageToWsUser,
 } from "../../domain/queries/wsUser";
 import RedisClient from "../../infrastructure/database/redis/redisClient";
 import { IMessageRequest } from "../../util/interfaces";
@@ -22,11 +22,16 @@ class WsConnectionHandler {
         }
         const message: IMessageRequest = JSON.parse(msg);
         const response = addMessageValidation(message);
+
         if (!response.status) {
           throw new Error(JSON.stringify(response.data));
         }
-        await publishMessage(message);
-        await this.client.lPush("messagingQueue", msg);
+
+        switch (message.type) {
+          case "message":
+            sendChatMessageToWsUser(message);
+            await this.client.lPush("messagingQueue", msg);
+        }
       } catch (error) {
         ws.send((error as Error).message || "unexpected error occurred");
       }
