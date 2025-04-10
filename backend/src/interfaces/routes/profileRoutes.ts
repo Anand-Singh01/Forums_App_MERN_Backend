@@ -32,12 +32,21 @@ profileRoutes.post(
 );
 
 profileRoutes.get(
-  "/get-profile",
+  "/get-profile/:userId?",
   async (req: Request, res: Response) => {
     try {
-      const { userId }: { userId: string } = res.locals.jwtData;
+      const requestedUserId = req.params.userId || res.locals.jwtData.userId;
 
-      const response: ServiceResponse = await getProfile(userId);
+      if (!requestedUserId) {
+        return res.status(400).json({
+          msg: "User ID is required",
+          status: false,
+          statusCode: 400,
+          data: null
+        });
+      }
+
+      const response: ServiceResponse = await getProfile(requestedUserId);
 
       res.status(response.statusCode).json({
         msg: response.message,
