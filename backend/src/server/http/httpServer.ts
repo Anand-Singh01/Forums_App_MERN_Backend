@@ -59,8 +59,8 @@ const startServer = async () => {
       console.log(`Http server listening on http://localhost:${PORT}`);
     });
 
-    //initializeWsServer(httpServer);
-    //await startWorker1();
+    initializeWsServer(httpServer);
+    await startWorker1();
   } catch (error) {
     console.error(error);
   }

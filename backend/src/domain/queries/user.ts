@@ -22,3 +22,12 @@ export const getGeneralUserInfo = async (userId: string) => {
     select: "profilePicture",
   });;
 };
+
+export const getUserAccountByUsernameKeywords = async (key: string) => {
+  return await User.find({
+    userName: { $regex: key, $options: 'i' }
+  }).populate({
+    path: "profile",
+    select: "profilePicture",
+  });
+};

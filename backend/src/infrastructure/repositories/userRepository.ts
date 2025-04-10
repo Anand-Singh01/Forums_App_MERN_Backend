@@ -8,7 +8,8 @@ import bcrypt from "bcrypt";
 import { Response } from "express";
 import { toRandomUserInfoDto, toUserInfoDto } from "../../domain/dto/userDto";
 import { IProfile } from "../../domain/models/profile";
-import { getGeneralUserInfo, getRandomUsers } from "../../domain/queries/user";
+import { IUser } from "../../domain/models/user";
+import { getGeneralUserInfo, getRandomUsers, getUserAccountByUsernameKeywords } from "../../domain/queries/user";
 import { createUser, findUserByEmail } from "../../domain/queries/wsUser";
 import {
   ILoginUser,
@@ -209,6 +210,42 @@ export const generalUserInfo = async (userId:string): Promise<ServiceResponse> =
       profilePicture:(info.profile as IProfile).profilePicture
     } as IUserGeneralInfo
     response.data = res;
+  } catch (error) {
+    response.status = false;
+    response.message = (error as Error).message;
+    response.statusCode = 500;
+  }
+  return response;
+};
+
+export const getUserAccountsByName = async (key:string): Promise<ServiceResponse> => {
+  let response: ServiceResponse = {
+    status: true,
+    statusCode: 200,
+    message: "User logged out",
+    data: null,
+  };
+
+  try {
+    const users = await getUserAccountByUsernameKeywords(key) as IUser[];
+    if (!users) {
+      response.statusCode = 401;
+      throw new Error("Users not found");
+    }
+    if(users.length > 0){
+      let res = [] as IUserGeneralInfo[];
+      users.map(({userName, email, updatedAt, profile})=>{
+        res.push({
+          userName,
+          email,
+          joinedOn:updatedAt,
+          profilePicture:(profile as IProfile).profilePicture
+        } as IUserGeneralInfo)
+      });
+      response.data = res;
+    }else{
+      response.data = [];
+    }
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message;

@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { generalUserInfo, randomAccount } from "../../infrastructure/repositories/userRepository";
+import { generalUserInfo, getUserAccountsByName, randomAccount } from "../../infrastructure/repositories/userRepository";
 import { serverError } from "../../util/helper";
 import { ServiceResponse } from "../../util/interfaces";
 
@@ -23,6 +23,19 @@ userRoutes.get("/general-user-info/:id", async(req:Request, res:Response)=>{
     try{
         const { id } = req.params;
         const response : ServiceResponse = await generalUserInfo(id);
+        res
+        .status(response.statusCode)
+        .json({ msg: response.message, data: response.data });
+    }catch(error){
+    return serverError(res, error);
+    }
+})
+
+
+userRoutes.get("/search-accounts/:key", async(req:Request, res:Response)=>{
+    try{
+        const { key } = req.params;
+        const response : ServiceResponse = await getUserAccountsByName(key);
         res
         .status(response.statusCode)
         .json({ msg: response.message, data: response.data });
