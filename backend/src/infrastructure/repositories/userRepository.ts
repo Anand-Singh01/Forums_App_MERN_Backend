@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 import { Response } from "express";
 import { toRandomUserInfoDto, toUserInfoDto } from "../../domain/dto/userDto";
 import { IProfile } from "../../domain/models/profile";
-import { IUser } from "../../domain/models/user";
+import { IUser, User } from "../../domain/models/user";
 import { getGeneralUserInfo, getRandomUsers, getUserAccountByUsernameKeywords } from "../../domain/queries/user";
 import { createUser, findUserByEmail } from "../../domain/queries/wsUser";
 import {
@@ -48,11 +48,14 @@ export const registerUser = async (
     // abdis default profile function
     const profileResponse = await createDefaultProfile(
       savedUser._id.toString(),
-      data.userName
+      savedUser.userName // Changed it to saverUser.username, from data.username
     );
-    if (!profileResponse.status) {
-      throw new Error("Error creating profile");
+    if (profileResponse.status) {
+      await User.findByIdAndUpdate(savedUser._id, {
+        profile: (profileResponse.data as { _id: string })._id,
+      });
     }
+
 
     setTokenAndCookie(
       res,
