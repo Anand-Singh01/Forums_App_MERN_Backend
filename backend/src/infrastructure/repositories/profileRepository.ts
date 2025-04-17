@@ -1,11 +1,16 @@
-import { IUpdateProfileData, ServiceResponse } from "../../util/interfaces";
+import { Types } from "mongoose";
+import { IProfile } from "../../domain/models/profile";
+import { User } from "../../domain/models/user";
 import {
   createDefaultProfileQuery,
   deleteProfileQuery,
   getAllProfilesQuery,
+  getFollowerCount,
+  getFollowingCount,
   getProfileByUserIdQuery,
   updateProfileQuery,
 } from "../../domain/queries/profile";
+import { IUpdateProfileData, ServiceResponse } from "../../util/interfaces";
 
 export const createDefaultProfile = async (
   userId: string,
@@ -34,7 +39,8 @@ export const createDefaultProfile = async (
 };
 
 export const getProfile = async (
-  userId: string
+  userId: string,
+  currentUserId:string
 ): Promise<ServiceResponse> => {
   let response: ServiceResponse = {
     message: "Profile retrieved successfully",
@@ -44,13 +50,26 @@ export const getProfile = async (
   };
 
   try {
-    const profile = await getProfileByUserIdQuery(userId);
+
+    const user = await User.findById(userId);
+    const profile : IProfile | null = await getProfileByUserIdQuery(user!.profile._id.toString());
+    const followerCount = await getFollowerCount(userId);
+    const followingCount = await getFollowingCount(userId);
     if (!profile) {
       response.statusCode = 404;
       throw new Error("Profile not found.");
     }
 
-    response.data = profile;
+    response.data = {
+      _id: profile._id.toString(),
+      profileName: profile.profileName,
+      profilePicture: profile.profilePicture,
+      profileDescription: profile.profileDescription,
+      followersCount: followerCount,
+      followingCount,
+      isFollowing: (user?.followers as Types.ObjectId[]).some( id => id.equals(currentUserId)),
+      postsCount: user!.writtenPosts.length 
+    }
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message || "Failed to retrieve profile";

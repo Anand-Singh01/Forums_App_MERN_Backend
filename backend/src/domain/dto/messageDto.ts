@@ -30,7 +30,7 @@ export const messageDto = (conversation: IConversation) => {
   const res = {
     conversationId: conversation._id.toString(),
     participants: modifiedParticipants,
-    messages: modifiedMessages,
+    messages: modifiedMessages || [],
   } as IConversationDto;
   return res;
 };

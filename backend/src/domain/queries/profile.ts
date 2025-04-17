@@ -1,5 +1,6 @@
 import dependencies from "../../infrastructure/dependencies";
 import { IUpdateProfileData } from "../../util/interfaces";
+import { User } from "../models/user";
 
 export const saveImageOnCloud = async (fileContent: string) => {
   const myCloud = await dependencies.cloud.v2.uploader.upload(fileContent);
@@ -16,8 +17,18 @@ export const createDefaultProfileQuery = async (userId: string, userName: string
 };
 
 export const getProfileByUserIdQuery = async (userId: string) => {
-  return await dependencies.models.Profile.findOne({ user: userId });
+  return await dependencies.models.Profile.findById(userId).populate('user');
 };
+
+export const getFollowerCount = async(userId:string) =>{
+  const user = await User.findById(userId);
+  return user?.followers.length;
+}
+
+export const getFollowingCount = async(userId:string) =>{
+  const user = await User.findById(userId);
+  return user?.following.length;
+}
 
 export const updateProfileQuery = async (
   userId: string,

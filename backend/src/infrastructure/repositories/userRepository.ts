@@ -237,9 +237,10 @@ export const getUserAccountsByName = async (key:string): Promise<ServiceResponse
     }
     if(users.length > 0){
       let res = [] as IUserGeneralInfo[];
-      users.map(({userName, email, updatedAt, profile})=>{
+      users.map(({userName, email, updatedAt, profile, _id})=>{
         res.push({
           userName,
+          userId:_id.toString(),
           email,
           joinedOn:updatedAt,
           profilePicture:(profile as IProfile).profilePicture

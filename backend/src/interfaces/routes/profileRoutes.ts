@@ -1,10 +1,10 @@
 import { Request, Response, Router } from "express";
+import { createDefaultProfile, deleteProfile, getProfile, updateProfile } from "../../infrastructure/repositories/profileRepository";
 import { serverError } from "../../util/helper";
 import { IUpdateProfileData, ServiceResponse } from "../../util/interfaces";
 import { verifyToken } from "../../util/token";
 import getDataUri from "../middleware/cloud/dataUri";
 import singleUpload from "../middleware/cloud/multer";
-import { createDefaultProfile, deleteProfile, getProfile, updateProfile } from "../../infrastructure/repositories/profileRepository";
 import { createProfileValidation, updateProfileValidation } from "../middleware/validation/profile";
 
 const profileRoutes = Router();
@@ -36,7 +36,7 @@ profileRoutes.get(
   async (req: Request, res: Response) => {
     try {
       const requestedUserId = req.params.userId || res.locals.jwtData.userId;
-
+      const { userId }: { userId: string } = res.locals.jwtData;
       if (!requestedUserId) {
         return res.status(400).json({
           msg: "User ID is required",
@@ -46,7 +46,7 @@ profileRoutes.get(
         });
       }
 
-      const response: ServiceResponse = await getProfile(requestedUserId);
+      const response: ServiceResponse = await getProfile(requestedUserId, userId);
 
       res.status(response.statusCode).json({
         msg: response.message,
@@ -60,8 +60,8 @@ profileRoutes.get(
 
 profileRoutes.put(
   "/update-profile",
-  updateProfileValidation,
   singleUpload,
+  updateProfileValidation,
   async (req: Request, res: Response) => {
     try {
       const { userId }: { userId: string } = res.locals.jwtData;

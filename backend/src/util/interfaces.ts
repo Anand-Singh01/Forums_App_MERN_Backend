@@ -193,6 +193,7 @@ export interface IRandomUserInfoDto{
 }
 
 export interface IUserGeneralInfo{
+  userId:string;
   userName: string;
   profilePicture: string;
   joinedOn:Date,

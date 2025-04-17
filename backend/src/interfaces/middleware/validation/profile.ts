@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import { ServiceResponse } from "../../../util/interfaces";
 import {
   createProfileSchema,
-  updateProfileSchema,
   deleteProfileSchema,
   getProfileByIdSchema,
+  updateProfileSchema,
 } from "../zod/zodSchema";
 
 export const createProfileValidation = (
@@ -72,7 +72,7 @@ export const updateProfileValidation = (
       throw new Error("Validation failed");
     }
 
-    if (!file && data.isImageUpdated) {
+    if (!file && String(data.isImageUpdated).toLowerCase() === 'true') {
       response.statusCode = 400;
       throw new Error("Profile picture is required.");
     }

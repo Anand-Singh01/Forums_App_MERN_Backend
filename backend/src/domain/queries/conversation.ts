@@ -45,6 +45,18 @@ export const getAllConversationQuery = async (
   }).sort({ createdAt: 1 });
 };
 
+export const createConversationQuery = async (
+  senderId: string,
+  receiverId: string
+) => {
+  const convo = new Conversation({
+    participants: [new Types.ObjectId(senderId), new Types.ObjectId(receiverId)],
+    messages: [],
+  });
+  await convo.save();
+  return convo;
+};
+
 export const getChatPartnersQuery = async (senderId: string) => {
   const conversations = await Conversation.find({
     participants: { $in: [senderId] },

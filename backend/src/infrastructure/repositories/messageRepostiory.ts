@@ -1,12 +1,12 @@
 import { messageDto } from "../../domain/dto/messageDto";
 import { User } from "../../domain/models/user";
-import { Message } from "../../domain/models/message";
 import {
+  createConversationQuery,
   deleteMessageByIdQuery,
   editMessageQuery,
-    getAllConversationQuery,
-    getChatPartnersQuery,
-    getMessageByIdQuery,
+  getAllConversationQuery,
+  getChatPartnersQuery,
+  getMessageByIdQuery,
 } from "../../domain/queries/conversation";
 import { ServiceResponse } from "../../util/interfaces";
 import { populateConversations } from "../database/mongo/populate";
@@ -33,6 +33,9 @@ export const getAllConversation = async (
       await populateConversations(conversation);
       response.data = messageDto(conversation);
     } else {
+      const newConvo = await createConversationQuery(senderId, receiverId);
+      await populateConversations(newConvo);
+      response.data = messageDto(newConvo);
       response.message = "no conversation exists with this user";
     }
   } catch (error) {
