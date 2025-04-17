@@ -8,6 +8,7 @@ export const postDto = (post: IPost) => {
   const user = post.postedBy as IUser;
   const isLiked = (post.likedBy as Types.ObjectId[]).includes(user._id as Types.ObjectId);
   const profile = user.profile as IProfile;
+
   let res = {
     postId: post._id.toString(),
     caption: post.caption,
@@ -16,7 +17,7 @@ export const postDto = (post: IPost) => {
     isLiked:isLiked,
     postedBy: {
       userId: user._id.toString(),
-      userName: user.userName,
+      userName: (post.postedBy as IUser).userName,
       profileImage:profile?.profilePicture || ""
     },
     totalComments: post.comments.length,

@@ -39,8 +39,8 @@ export const addPost = async (
       response.statusCode = 400;
       throw new Error("image is required.");
     }
-    const savedPost = await addPostQuery(caption, region, postImage, userId);
-    populatePost(savedPost);
+    let savedPost = await addPostQuery(caption, region, postImage, userId);
+    await populatePost(savedPost);
     response.data = postDto(savedPost);
   } catch (error) {
     response.status = false;
@@ -97,6 +97,7 @@ export const getAllPosts = async () => {
     });
     response.data = modifiedPosts;
   } catch (error) {
+    console.log(error);
     response.status = false;
     response.message = (error as Error).message || "unexpected error occurred";
     if (!response.statusCode || response.statusCode === 200) {

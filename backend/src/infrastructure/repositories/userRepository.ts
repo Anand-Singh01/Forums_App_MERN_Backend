@@ -35,34 +35,46 @@ export const registerUser = async (
   };
 
   try {
-    // exists?
+    // Check if user already exists
     const existingUser = await findUserByEmail(data.email);
-
     if (existingUser) {
       response.statusCode = 401;
       throw new Error("User already exists");
     }
 
-    const savedUser = await createUser(data);
+    // Create new user
+    let savedUser = await createUser(data);
 
-    // abdis default profile function
+    // Create default profile
     const profileResponse = await createDefaultProfile(
       savedUser._id.toString(),
-      savedUser.userName // Changed it to saverUser.username, from data.username
+      savedUser.userName
     );
+
+    // Link profile to user
     if (profileResponse.status) {
       await User.findByIdAndUpdate(savedUser._id, {
         profile: (profileResponse.data as { _id: string })._id,
       });
+
+      // Refetch updated user
+      const refetchedUser = await User.findById(savedUser._id);
+      if (!refetchedUser) {
+        throw new Error("User not found after update");
+      }
+      savedUser = refetchedUser;
     }
 
-
+    // Set token and cookie
     setTokenAndCookie(
       res,
       { email: savedUser.email, userId: savedUser._id.toString() },
       "7d"
     );
-    response.data = { _id: savedUser._id, email: savedUser.email };
+
+    // Populate and return user info
+    await populateUser(savedUser);
+    response.data = toUserInfoDto(savedUser);
   } catch (error) {
     response.status = false;
     response.message = (error as Error).message;
@@ -70,8 +82,10 @@ export const registerUser = async (
       response.statusCode = 500;
     }
   }
+
   return response;
 };
+
 
 export const loginUser = async (
   data: ILoginUser,
